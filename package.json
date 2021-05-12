@@ -10,6 +10,7 @@
     "lintfix": "standard --fix"
   },
   "devDependencies": {
+    "@newswire/frames": "^0.3.1",
     "@njam-data/new-jersey-counties": "^0.0.1",
     "@njam-data/new-jersey-municipalities": "^1.0.0",
     "@sveltejs/adapter-static": "^1.0.0-next.9",
