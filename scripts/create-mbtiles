@@ -1,0 +1,21 @@
+#! /usr/bin/env bash
+
+echo 'remove old tiles'
+rm -rf data/railroad-crossing-incidents.mbtiles
+
+echo 'create tiles'
+tippecanoe -o data/railroad-crossing-incidents.mbtiles \
+  -l railroad_crossing_incidents \
+  -n "railroad crossing incidents" \
+  --no-feature-limit \
+  --no-tile-compression \
+  --no-tile-size-limit \
+  --cluster-distance=10 \
+  --accumulate-attribute='Number of accidents':sum \
+  --accumulate-attribute='Total Killed':sum \
+  --accumulate-attribute='Total injured':sum \
+  --accumulate-attribute='CrossingID':comma \
+  -r1 \
+  -Z5 \
+  -z20 \
+  data/railroad-crossing-incidents.geojson

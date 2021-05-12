@@ -1,0 +1,43 @@
+#! /usr/bin/env bash
+
+# echo 'remove old tiles'
+# rm -rf data/tiles/railroad-crossing-incident-totals
+
+# echo 'create tiles directory'
+# mkdir -p data/tiles/railroad-crossing-incident-totals
+
+echo 'create state tiles'
+tippecanoe -e data/tiles/railroad-crossing-incident-totals/states \
+  -l state_totals \
+  -n "state totals" \
+  --no-feature-limit \
+  --no-tile-compression \
+  --no-tile-size-limit \
+  -r1 \
+  -Z0 \
+  -z8 \
+  data/state-totals.geojson
+
+echo 'create county tiles'
+tippecanoe -e data/tiles/railroad-crossing-incident-totals/counties \
+  -l county_totals \
+  -n "county totals" \
+  --no-feature-limit \
+  --no-tile-compression \
+  --no-tile-size-limit \
+  -r1 \
+  -Z8 \
+  -z14 \
+  data/nj-county-totals.geojson
+
+echo 'create municipality tiles'
+tippecanoe -e data/tiles/railroad-crossing-incident-totals/municipalities \
+  -l municipality_totals \
+  -n "municipality totals" \
+  --no-feature-limit \
+  --no-tile-compression \
+  --no-tile-size-limit \
+  -r1 \
+  -Z8 \
+  -z14 \
+  data/nj-municipality-totals.geojson
