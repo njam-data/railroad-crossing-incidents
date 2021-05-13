@@ -194,9 +194,9 @@
         {selectedFeature.properties.CityName}, {selectedFeature.properties.CountyName}, {selectedFeature.properties.StateName}
       </h3>
       <p class="font-bold my-0 pt-1 pb-3 max-w-2xl text-sm text-gray-600">
-        {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'YES'}
+        {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'Yes'}
           <CheckIcon /> Meets minimum safety guidelines
-        {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'NO'}
+        {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'No'}
           <XIcon /> Does not meet minimum safety guidelines
         {:else}
           <QuestionIcon /> May or may not meet minimum safety guidelines
