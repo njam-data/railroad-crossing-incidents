@@ -158,12 +158,6 @@
   })
 </script>
 
-<style>
-  .selected {
-    @apply text-gray-900 bg-gray-100;
-  }
-</style>
-
 <div bind:this={container} class="flex-grow z-0 h-full">
   {#if map}
     <slot></slot>

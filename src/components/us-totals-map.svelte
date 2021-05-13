@@ -43,7 +43,7 @@
         [ 6175, '#7c1d6f']
       ]
     }
-console.log('weeeooo')
+
     map.setPaintProperty('state_totals', 'fill-color', {
       property: selectedProperty,
       stops: stops
@@ -183,12 +183,6 @@ console.log('weeeooo')
     }
   })
 </script>
-
-<style>
-  .selected {
-    @apply text-gray-900 bg-gray-100;
-  }
-</style>
 
 <div bind:this={container} class="flex-grow z-0 h-full">
   {#if map}
