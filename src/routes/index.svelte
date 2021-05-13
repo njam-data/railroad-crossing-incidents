@@ -103,7 +103,7 @@
       const queryString = $page.query.toString()
       console.log('not the map', queryString)
       if (browser) {
-        goto(`${base}/${$page.path}?${queryString}`)
+        goto(`${base}?${queryString}`)
       }
     }
   }
@@ -112,9 +112,9 @@
     $page.query.set('view', view)
     selectedView = view
     const queryString = $page.query.toString()
-
+console.log(`${base}/${$page.path}?${queryString}`)
     if (browser) {
-      await goto(`${base}/${$page.path}?${queryString}`) 
+      await goto(`${base}?${queryString}`) 
     }
   }
 
