@@ -81,6 +81,7 @@
 <script>
   import { browser } from '$app/env'
   import { page } from '$app/stores'
+  import { base } from '$app/paths';
   import { goto } from '$app/navigation'
   import Map from '$components/map.svelte'
   import List from '$components/list.svelte'
@@ -102,7 +103,7 @@
       const queryString = $page.query.toString()
       console.log('not the map', queryString)
       if (browser) {
-        goto(`${$page.path}?${queryString}`)
+        goto(`${base}/${$page.path}?${queryString}`)
       }
     }
   }
@@ -113,7 +114,7 @@
     const queryString = $page.query.toString()
 
     if (browser) {
-      await goto(`${$page.path}?${queryString}`) 
+      await goto(`${base}/${$page.path}?${queryString}`) 
     }
   }
 
@@ -130,7 +131,6 @@
   }
 
   function onViewLocation (e) {
-    console.log('viewLocation', e)
     const [lng, lat] = e.detail
     $page.query.set('lng', lng)
     $page.query.set('lat', lat)
