@@ -20,6 +20,7 @@
     "@turf/center-of-mass": "^6.3.0",
     "@turf/centroid": "^6.3.0",
     "@turf/helpers": "^6.3.0",
+    "@turf/points-within-polygon": "^6.3.0",
     "autoprefixer": "^10.2.5",
     "cssnano": "^5.0.1",
     "desm": "^1.1.0",
@@ -30,5 +31,8 @@
     "svelte": "^3.34.0",
     "svelte-preprocess": "^4.7.3",
     "tailwindcss": "^2.1.1"
+  },
+  "dependencies": {
+    "@turf/boolean-point-in-polygon": "^6.3.0"
   }
 }

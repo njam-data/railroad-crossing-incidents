@@ -1,16 +1,21 @@
 import * as path from 'path'
 
 import * as turf from '@turf/helpers'
+import pointsWithinPolygon from '@turf/points-within-polygon'
+import pointInPolygon from '@turf/boolean-point-in-polygon'
 import xlsx from 'node-xlsx'
 import { join } from 'desm'
 
-import { writeJson } from './lib/fs.js'
+import { writeJson, readJson } from './lib/fs.js'
 
 const dataDirectory = join(import.meta.url, '..', 'data')
 const sourceDataFile = path.join(dataDirectory, 'source', 'RRData.xlsx')
 const targetGeojsonDataFile = path.join(dataDirectory, 'railroad-crossing-incidents.geojson')
 const targetJsonDataFile = path.join(dataDirectory, 'railroad-crossing-incidents.json')
+const unmatchedFeaturesFile = path.join(dataDirectory, 'unmatched-features.json')
 const workSheetsFromFile = xlsx.parse(sourceDataFile)
+
+const statesGeojson = await readJson(path.join(dataDirectory, 'us-states.geojson'))
 
 const [worksheet] = workSheetsFromFile
 const headers = worksheet.data.shift()
@@ -57,13 +62,29 @@ const data = worksheet.data.map((row, rowIndex) => {
 })
 
 const geojson = turf.featureCollection(data)
-await writeJson(targetGeojsonDataFile, geojson)
+console.log('geojson length', geojson.features.length)
+// const filteredGeojson = pointsWithinPolygon(geojson, statesGeojson)
+// console.log('filtered geojson length', filteredGeojson.features.length)l
+const notMatched = []
+const matchedGeojson = turf.featureCollection(geojson.features.filter((feature) => {
+  return statesGeojson.features.find((state) => {
+    if (pointInPolygon(feature, state) && state.properties.STUSPS === feature.properties.StateName) {
+      return true
+    } else {
+      return false
+    }
+  })
+}))
+console.log('notMatched length', notMatched.length)
+console.log('matched geojson length', matchedGeojson.features.length)
+await writeJson(targetGeojsonDataFile, matchedGeojson)
+// await writeJson(unmatchedFeaturesFile, notMatched)
 
-const json = geojson.features.map((feature) => {
-  return feature.properties
-})
+// const json = geojson.features.map((feature) => {
+//   return feature.properties
+// })
 
-await writeJson(targetJsonDataFile, json)
+// await writeJson(targetJsonDataFile, json)
 
 console.log(errors.length, 'errors')
 

@@ -26,7 +26,7 @@ tippecanoe -e data/tiles/railroad-crossing-incident-totals/counties \
   --no-tile-compression \
   --no-tile-size-limit \
   -r1 \
-  -Z8 \
+  -Z6 \
   -z14 \
   data/nj-county-totals.geojson
 
@@ -38,6 +38,6 @@ tippecanoe -e data/tiles/railroad-crossing-incident-totals/municipalities \
   --no-tile-compression \
   --no-tile-size-limit \
   -r1 \
-  -Z8 \
+  -Z6 \
   -z14 \
   data/nj-municipality-totals.geojson

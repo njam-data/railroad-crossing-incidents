@@ -6,6 +6,7 @@
   let container
   let map
   let mapbox
+  let selectedProperty = 'accidents'
 
   setContext(mapKey, {
     getMap: () => map
@@ -14,6 +15,22 @@
   setContext(mapboxKey, {
     getMapbox: () => mapbox
   })
+
+  function selectProperty (prop) {
+    selectedProperty = prop
+    map.setPaintProperty('county_totals', 'fill-color', {
+      property: selectedProperty,
+      stops: [
+        [ 0, '#fcde9c'],
+        [ 15, '#faa476'],
+        [ 30, '#f0746e'],
+        [ 45, '#e34f6f'],
+        [ 60, '#dc3977'],
+        [ 75, '#b9257a'],
+        [ 90, '#7c1d6f']
+      ]
+    })
+  }
 
   onMount(async () => {
     mapbox = window.mapboxgl
@@ -24,7 +41,7 @@
       style: 'mapbox://styles/mapbox/light-v10',
       center: $njMapState.lngLat,
       zoom: $njMapState.zoom,
-      minZoom: 8,
+      minZoom: 7,
       maxZoom: 14
     })
 
@@ -43,19 +60,23 @@
         'source-layer': 'county_totals',
         'layout': {},
         'paint': {
-          // 'circle-radius': [
-          //   'case',
-          //   ['has', 'sqrt_point_count'],
-          //   ['-', ['get', 'sqrt_point_count'], 10],
-          //   5
-          // ],
-          'fill-color': 'red',
-          'fill-opacity': 0.3,
+          'fill-color': {
+            property: selectedProperty,
+            stops: [
+              [ 0, '#fcde9c'],
+              [ 15, '#faa476'],
+              [ 30, '#f0746e'],
+              [ 45, '#e34f6f'],
+              [ 60, '#dc3977'],
+              [ 75, '#b9257a'],
+              [ 90, '#7c1d6f']
+            ]
+          },
           'fill-opacity': [
             'case',
             ['boolean', ['feature-state', 'hover'], false],
             1,
-            0.5
+            0.8
           ]
         }
       })
@@ -137,8 +158,99 @@
   })
 </script>
 
+<style>
+  .selected {
+    @apply text-gray-900 bg-gray-100;
+  }
+</style>
+
 <div bind:this={container} class="flex-grow z-0 h-full">
   {#if map}
     <slot></slot>
   {/if}
+
+  <div class="relative z-10 inline-flex shadow-sm rounded-md top-2 left-2">
+    <button
+      type="button"
+      on:click={() => { selectProperty('accidents') }}
+      class:selected="{selectedProperty === 'accidents'}"
+      class="
+        relative
+        inline-flex
+        items-center
+        px-4
+        py-2
+        rounded-l-md
+        border
+        border-gray-300
+        bg-white
+        text-sm
+        font-medium
+        text-gray-700
+        hover:bg-gray-50
+        focus:z-10
+        focus:outline-none
+        focus:ring-1
+        focus:ring-indigo-500
+        focus:border-indigo-500
+      "
+    >
+      Accidents
+    </button>
+    <button
+      type="button"
+      on:click={() => { selectProperty('killed') }}
+      class:selected="{selectedProperty === 'killed'}"
+      class="
+        -ml-px
+        relative
+        inline-flex
+        items-center
+        px-4
+        py-2
+        border
+        border-gray-300
+        bg-white
+        text-sm
+        font-medium
+        text-gray-700
+        hover:bg-gray-50
+        focus:z-10
+        focus:outline-none
+        focus:ring-1
+        focus:ring-indigo-500
+        focus:border-indigo-500
+      "
+    >
+      Killed
+    </button>
+    <button
+      type="button"
+      on:click={() => { selectProperty('injured') }}
+      class:selected="{selectedProperty === 'injured'}"
+      class="
+        -ml-px
+        relative
+        inline-flex
+        items-center
+        px-4
+        py-2
+        rounded-r-md
+        border
+        border-gray-300
+        bg-white
+        text-sm
+        font-medium
+        text-gray-700
+        hover:bg-gray-50
+        focus:z-10
+        focus:outline-none
+        focus:ring-1
+        focus:ring-indigo-500
+        focus:border-indigo-500
+      "
+    >
+      Injured
+    </button>
+  </div>
 </div>

@@ -3,6 +3,12 @@
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { njMapState } from '$lib/stores.js'
 
+  import CheckIcon from '$components/icons/check.svelte'
+  import QuestionIcon from '$components/icons/question.svelte'
+  import XIcon from '$components/icons/x.svelte'
+
+  export let center
+
   let container
   let map
   let mapbox
@@ -20,17 +26,17 @@
     'Street',
     'CityName',
     'CountyName',
-    'StateName'
+    'StateName',
+    'Meets minimum safety guidelines'
   ]
 
   const labels = {
     CountyName: 'County',
     CityName: 'City',
-
+    StateName: 'State'
   }
 
   $: if (selectedFeature) {
-    console.log('well hey there', Object.keys(selectedFeature.properties).length)
     properties = Object.keys(selectedFeature.properties)
       .filter((key) => {
         const exclude = excludeProperties.find((prop) => {
@@ -44,7 +50,6 @@
           value: selectedFeature.properties[key]
         }
       })
-    console.log('properties', properties, properties.length)
   }
 
   setContext(mapKey, {
@@ -62,11 +67,19 @@
     map = new mapbox.Map({
       container,
       style: 'mapbox://styles/mapbox/light-v10',
-      center: $njMapState.lngLat,
-      zoom: $njMapState.zoom,
-      minZoom: 5,
+      center: center || $njMapState.lngLat,
+      zoom: center ? 15 : $njMapState.zoom,
+      minZoom: 3,
       maxZoom: 20
     })
+
+    map.addControl(
+      new MapboxGeocoder({
+        accessToken: mapbox.accessToken,
+        mapboxgl: mapbox
+      }),
+      'top-right'
+    )
 
     map.on('load', () => {
       map.resize()
@@ -89,10 +102,33 @@
             ['-', ['get', 'sqrt_point_count'], 10],
             5
           ],
-          'circle-color': 'red'
+          'circle-color': [
+            'case',
+            ['==', ['get', 'Number of accidents'], 0],
+            'blue',
+            'red'
+          ]
         }
       })
     })
+
+    if (center) {
+      setTimeout(() => {
+        const point = map.project(center)
+        const width = 10
+        const height = 10
+        const features = map.queryRenderedFeatures([
+          [point.x - width / 2, point.y - height / 2],
+          [point.x + width / 2, point.y + height / 2]
+          ], {
+            layers: ['railroad_crossing_incidents']
+        })
+
+        if (features.length === 1) {
+          selectedFeature = features[0]
+        }
+      }, 1100)
+    }
 
     let popup = new mapboxgl.Popup({
       closeButton: false,
@@ -149,7 +185,7 @@
   {/if}
 
   {#if selectedFeature}
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg absolute right-0 mt-4 mr-4 w-1/2 lg:w-1/3 z-10 pb-2">
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg absolute top-16 right-0 mt-4 mr-4 w-1/2 lg:w-1/3 pb-2">
     <div class="px-4 py-4 sm:px-6">
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         {selectedFeature.properties.Street}
@@ -157,13 +193,23 @@
       <h3 class="text-md leading-6 font-medium text-gray-600 mb-2">
         {selectedFeature.properties.CityName}, {selectedFeature.properties.CountyName}, {selectedFeature.properties.StateName}
       </h3>
-      <p class="font-bold my-0 py0 max-w-2xl text-sm text-gray-600">
+      <p class="font-bold my-0 pt-1 pb-3 max-w-2xl text-sm text-gray-600">
+        {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'YES'}
+          <CheckIcon /> Meets minimum safety guidelines
+        {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'NO'}
+          <XIcon /> Does not meet minimum safety guidelines
+        {:else}
+          <QuestionIcon /> May or may not meet minimum safety guidelines
+        {/if}
+        
+      </p>
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
         {selectedFeature.properties['Number of accidents']} Accidents
       </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-sm text-gray-600">
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
         {selectedFeature.properties['Total Killed']} Killed
       </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-sm text-gray-600">
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
         {selectedFeature.properties['Total injured']} Injured
       </p>
     </div>
@@ -174,7 +220,7 @@
         {#each properties as prop}
         <div class="py-1 sm:py-2 grid grid-cols-2 gap-2 sm:px-6">
           <dt class="text-sm font-medium text-gray-500">
-            {prop.key}
+            {labels[prop.key] || prop.key}
           </dt>
           <dd class="text-sm text-gray-900 mt-0 col-span-1">
             {prop.value}

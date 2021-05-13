@@ -1,28 +1,43 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
+
+  import CheckIcon from '$components/icons/check.svelte'
+  import QuestionIcon from '$components/icons/question.svelte'
+  import XIcon from '$components/icons/x.svelte'
+
   export let rows
-  export let columns
+  const columns = rows[0].map((row) => {
+    return row.key
+  })
 
-	let sortBy = {col: "id", ascending: true};
+  const dispatch = createEventDispatcher()
 
-	$: sort = (column) => {
-		if (sortBy.col == column) {
-			sortBy.ascending = !sortBy.ascending
-		} else {
-			sortBy.col = column
-			sortBy.ascending = true
-		}
+  function onFilter (filters) {
+    dispatch('filter', filters)
+  }
 
-		let sortModifier = (sortBy.ascending) ? 1 : -1;
+  let ascending = true
+  function onSort (column) {
+    dispatch('sort', {
+      column,
+      direction: !!ascending
+    })
+  }
 
-		let sort = (a, b) => 
-			(a[column] < b[column]) 
-			? -1 * sortModifier 
-			: (a[column] > b[column]) 
-			? 1 * sortModifier 
-			: 0;
+  function onSearch (value) {
+    dispatch('search', {
+      value
+    })
+  }
 
-    rows = rows.sort(sort);
-	}
+  function onNextPage (value) {
+    dispatch('nextPage')
+  }
+
+  function onRowClick (value) {
+    console.log('huh')
+    dispatch('viewLocation', value)
+  }
 </script>
 
 <div class="flex flex-col h-full overflow-scroll">
@@ -36,7 +51,7 @@
                 <th
                   scope="col"
                   class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
-                  on:click={sort(column)}
+                  on:click={() => { onSort(column) }}
                 >
                   {column}
                 </th>
@@ -47,7 +62,24 @@
             {#each rows as row}
               <tr>
                 {#each row as cell}
-                  <td class="px-6 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">{cell.value}</td>
+                  <td class="px-6 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">
+                    {#if cell.key === 'Map view'}
+                      <button on:click={() => {
+                        console.log('what')
+                        onRowClick(cell.value)
+                      }} class="text-gray-600 hover:text-blue-600 hover:shadow-sm bg-gray-50 hover:bg-gray-100 p-2">View on map</button>
+                    {:else if cell.key === 'Meets minimum safety guidelines'}
+                      {#if cell.value === 'Yes'}
+                        <CheckIcon /> Yes
+                      {:else if cell.value === 'No'}
+                        <XIcon /> No
+                      {:else}
+                        <QuestionIcon /> Info unavailable
+                      {/if}
+                    {:else}
+                    {cell.value}
+                    {/if}
+                  </td>
                 {/each}
               </tr>
             {/each}
