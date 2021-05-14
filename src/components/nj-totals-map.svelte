@@ -2,7 +2,6 @@
   import { onMount, setContext } from 'svelte'
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { njMapState } from '$lib/stores.js'
-  import njCountyTotals from '$data/nj-county-totals.geo.json'
 
   let container
   let map
@@ -52,14 +51,9 @@
     map.on('load', () => {
       // map.resize()
 
-      // map.addSource('county_totals', {
-      //   type: 'vector',
-      //   tiles: ['https://njam-tiles.s3.amazonaws.com/railroad-crossing-incident-totals/counties/{z}/{x}/{y}.pbf']
-      // })
-
       map.addSource('county_totals', {
-        type: 'geojson',
-        data: njCountyTotals
+        type: 'vector',
+        tiles: ['https://njam-tiles.s3.amazonaws.com/railroad-crossing-incident-totals/counties/{z}/{x}/{y}.pbf']
       })
 
       map.addLayer({
