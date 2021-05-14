@@ -103,8 +103,11 @@
       map.getCanvas().style.cursor = ''
     })
 
-    map.on('click', 'county_totals', async function (e) {
-      selectedFeature = e.features[0]
+    map.on('click', async function (e) {
+      const features = map.queryRenderedFeatures(e.point)
+      selectedFeature = features.find((feature) => {
+        return feature.layer.id === 'county_totals'
+      })
     })
 
     return () => {

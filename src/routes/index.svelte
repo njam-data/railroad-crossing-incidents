@@ -147,28 +147,18 @@
 
 <svelte:head>
   <title>Railroad Crossing Incidents</title>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
   <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
 </svelte:head>
 
-<div class="flex flex-col h-screen border border-gray-100">
+<div class="flex flex-col h-screen border border-gray-100  max-w-screen-lg mx-auto">
   <div class="flex-none p-4">
     <h1 class="font-bold text-gray-600">Railroad Crossing Incidents</h1>
   </div>
 
-  <div class="flex-none sm:hidden p-4 pt-0">
-    <label for="tabs" class="sr-only">Select a visualization</label>
-    <select bind:value={selectedView} on:change={(e) => { selectView(e.target.value )}} id="tabs" name="tabs" class="block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md">
-      <option value="nj-totals">N.J. County totals</option>
-      <option value="us-totals">U.S. State totals</option>
-      <option value="map" selected>Map</option>
-      <option value="list">List</option>
-    </select>
-  </div>
-
-  <div class="flex-none hidden sm:block">
+  <div class="flex-none block">
     <nav class="relative z-0 shadow flex divide-x divide-gray-200 border-t border-gray-100 border-" aria-label="Tabs">
       <button
         on:click={() => { selectView('nj-totals') }}
@@ -280,6 +270,6 @@
   </div>
 
   <div class="flex-none p-4 text-xs text-gray-500 border-t border-gray-200">
-    Story by Payton Guion. Graphics by Seth Vincent. <br>Data from the Federal Railroad Administration.
+    Story by <a href="https://twitter.com/PaytonGuion" target="_blank" class="underline">Payton Guion</a>. Graphics by <a href="https://twitter.com/sethdvincent" target="_blank" class="underline">Seth Vincent</a>. <br class="sm:hidden">Data from the <a href="https://railroads.dot.gov" target="_blank" class="underline">Federal Railroad Administration</a>.
   </div>
 </div>

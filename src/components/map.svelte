@@ -101,7 +101,7 @@
           'circle-radius': [
             'case',
             ['has', 'sqrt_point_count'],
-            ['-', ['get', 'sqrt_point_count'], 10],
+            ['+', ['*', ['get', 'sqrt_point_count'], 1.3], 5],
             5
           ],
           'circle-color': [
@@ -109,6 +109,19 @@
             ['==', ['get', 'Number of accidents'], 0],
             'blue',
             'red'
+          ],
+          'circle-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            1,
+            0.3
+          ],
+          'circle-stroke-color': 'white',
+          'circle-stroke-width': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            3,
+            0
           ]
         }
       })
@@ -132,17 +145,68 @@
       }, 1100)
     }
 
+    let hoverFeatureId = null
+
+    function setHoverState ({ featureId, state }) {
+      map.setFeatureState({
+        id: featureId,
+        source: 'railroad_crossing_incidents',
+        sourceLayer: 'railroad_crossing_incidents',
+      }, {
+        hover: state
+      })
+    }
+
     let popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false
     })
 
-    map.on('mouseenter', 'railroad_crossing_incidents', function (e) {
+    map.on('mousemove', (e) => {
+      let features = map.queryRenderedFeatures(e.point, {
+        layers: ['railroad_crossing_incidents']
+      })
+
+      const feature = features[0]
+
+      if (!feature) {
+        map.getCanvas().style.cursor = ''
+        popup.remove()
+        if (hoverFeatureId) {
+          setHoverState({
+            featureId: hoverFeatureId,
+            state: false
+          })
+          hoverFeatureId = null
+        }
+        return 
+      }
+
       map.getCanvas().style.cursor = 'pointer';
-      const feature = e.features[0]
+
+      if (feature && feature.id === hoverFeatureId) {
+        return
+      }
+
+      if (hoverFeatureId) {
+        setHoverState({
+          featureId: hoverFeatureId,
+          state: false
+        })
+      }
+
+      hoverFeatureId = feature.id
+
+      setHoverState({
+        featureId: feature.id,
+        state: true
+      })
+
       const properties = feature.properties
       const geometry = feature.geometry
       const coordinates = geometry.coordinates.slice();
+
+      hoverFeatureId = feature.id
 
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -154,21 +218,19 @@
       }
     })
 
-    map.on('mouseleave', 'railroad_crossing_incidents', function () {
-      map.getCanvas().style.cursor = ''
-      popup.remove()
-    })
-
     map.on('click', 'railroad_crossing_incidents', async function (e) {
       const feature = e.features[0]
       const { point_count } = feature.properties
+      map.resize()
 
       if (point_count) {
         const zoom = map.getZoom() + 2
+
         map.flyTo({
           center: feature.geometry.coordinates,
           zoom
         })
+
         selectedFeature = null
       } else {
         selectedFeature = e.features[0]
@@ -181,57 +243,66 @@
   })
 </script>
 
-<div bind:this={container} class="flex-grow z-0 h-full">
-  {#if map}
-    <slot></slot>
-  {/if}
-
-  {#if selectedFeature}
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg absolute top-16 right-0 mt-4 mr-4 w-1/2 lg:w-1/3 pb-2">
-    <div class="px-4 py-4 sm:px-6">
-      <h3 class="text-lg leading-6 font-medium text-gray-900">
-        {selectedFeature.properties.Street}
-      </h3>
-      <h3 class="text-md leading-6 font-medium text-gray-600 mb-2">
-        {selectedFeature.properties.CityName}, {selectedFeature.properties.CountyName}, {selectedFeature.properties.StateName}
-      </h3>
-      <p class="font-bold my-0 pt-1 pb-3 max-w-2xl text-sm text-gray-600">
-        {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'Yes'}
-          <CheckIcon /> Meets minimum safety guidelines
-        {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'No'}
-          <XIcon /> Does not meet minimum safety guidelines
-        {:else}
-          <QuestionIcon /> May or may not meet minimum safety guidelines
-        {/if}
-        
-      </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties['Number of accidents']} Accidents
-      </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties['Total Killed']} Killed
-      </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties['Total injured']} Injured
-      </p>
-    </div>
-
-    <div class="border-t border-gray-200 px-4 py-2 sm:py-4 sm:p-0">
-      <dl class="divide-y divide-gray-200">
-        {#if properties}
-        {#each properties as prop}
-        <div class="py-1 sm:py-2 grid grid-cols-2 gap-2 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">
-            {labels[prop.key] || prop.key}
-          </dt>
-          <dd class="text-sm text-gray-900 mt-0 col-span-1">
-            {prop.value}
-          </dd>
-        </div>
-        {/each}
-        {/if}
-      </dl>
-    </div>
+<div class="flex flex-col sm:flex-row h-full">
+  <div bind:this={container} class="flex-grow z-0 h-full">
+    {#if map}
+      <slot></slot>
+    {/if}
   </div>
-  {/if}
-</div>
+
+  <div class="bg-white h-1/2 sm:w-1/2 sm:h-full md:w-96 border-gray-200 border-t sm:border-t-0 sm:border-l">
+    <div class="h-full overflow-y-scroll">
+    {#if selectedFeature}
+      <div class="px-4 py-4 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          {selectedFeature.properties.Street}
+        </h3>
+        <h3 class="text-md leading-6 font-medium text-gray-600 mb-2">
+          {selectedFeature.properties.CityName}, {selectedFeature.properties.CountyName}, {selectedFeature.properties.StateName}
+        </h3>
+        <p class="font-bold my-0 pt-1 pb-3 max-w-2xl text-sm text-gray-600">
+          {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'Yes'}
+            <CheckIcon /> Meets minimum safety guidelines
+          {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'No'}
+            <XIcon /> Does not meet minimum safety guidelines
+          {:else}
+            <QuestionIcon /> May or may not meet minimum safety guidelines
+          {/if}
+        </p>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties['Number of accidents']} Accidents
+        </p>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties['Total Killed']} Killed
+        </p>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties['Total injured']} Injured
+        </p>
+      </div>
+  
+      <div class="border-t border-gray-200 px-4 py-2 sm:py-4 sm:p-0">
+        <dl class="divide-y divide-gray-200">
+          {#if properties}
+          {#each properties as prop}
+          <div class="py-1 sm:py-2 grid grid-cols-2 gap-2 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">
+              {labels[prop.key] || prop.key}
+            </dt>
+            <dd class="text-sm text-gray-900 mt-0 col-span-1">
+              {prop.value}
+            </dd>
+          </div>
+          {/each}
+          {/if}
+        </dl>
+      </div>
+      {:else}
+        <div class="px-4 py-4 sm:px-6 flex items center h-full">
+          <h1 class="block self-center w-[220px] font-medium text-gray-500 text-xl mx-auto align-middle">
+            Click a point to learn <br>about accidents and other information at that railroad crossing.
+          </h1>
+        </div>
+      {/if}
+      </div>
+    </div>  
+  </div>

@@ -17,7 +17,7 @@ const njMunicipalitiesTargetFilepath = path.join(dataDirectory, 'nj-municipality
 const states = await readJson(path.join(dataDirectory, 'us-states.geojson'))
 const counties = await getCounties('geojson')
 const municipalities = await getMunicipalities('geojson')
-console.log('Obbwnekubniwaeungb', Object.keys(municipalities))
+
 const stateTotals = {}
 const njCountyTotals = {}
 const njMunicipalityTotals = {}
@@ -71,7 +71,7 @@ for (const incident of json) {
   }
 }
 
-const statesGeojson = featureCollection(objectToArray(stateTotals).map((state) => {
+const statesGeojson = featureCollection(objectToArray(stateTotals).map((state, i) => {
   const feature = states.features.find((feature) => {
     console.log('feature', feature)
     return state.name === feature.properties.STUSPS
@@ -87,10 +87,11 @@ const statesGeojson = featureCollection(objectToArray(stateTotals).map((state) =
     name: feature.properties.NAME
   }
 
+  feature.id = `${feature.properties.name}-${i}`
   return feature
 }))
 
-const countiesGeojson = featureCollection(objectToArray(njCountyTotals).map((county) => {
+const countiesGeojson = featureCollection(objectToArray(njCountyTotals).map((county, i) => {
   const feature = counties.features.find((feature) => {
     return county.name === feature.properties.county
   })
@@ -100,10 +101,11 @@ const countiesGeojson = featureCollection(objectToArray(njCountyTotals).map((cou
     ...county
   }
 
+  feature.id = `${feature.properties.name}-${i}`
   return feature
 }))
 
-const municipalitiesGeojson = featureCollection(municipalities.features.map((feature) => {
+const municipalitiesGeojson = featureCollection(municipalities.features.map((feature, i) => {
   const municipalityKey = Object.keys(njMunicipalityTotals).sort().find((key) => {
     return feature.mun && feature.mun.includes(key)
   })
@@ -122,6 +124,7 @@ const municipalitiesGeojson = featureCollection(municipalities.features.map((fea
     }
   }
 
+  feature.id = `${feature.properties.name}-${i}`
   return feature
 }))
 
