@@ -72,8 +72,6 @@
       maxZoom: 8
     })
 
-    // map.addControl(new mapbox.Navigation())
-
     map.on('load', () => {
       map.resize()
 

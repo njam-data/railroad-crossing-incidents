@@ -45,11 +45,9 @@
       minZoom: 7,
       maxZoom: 14
     })
-    map.showTileBoundaries = true
-    // map.addControl(new mapbox.Navigation())
 
     map.on('load', () => {
-      // map.resize()
+      map.resize()
 
       map.addSource('county_totals', {
         type: 'vector',
