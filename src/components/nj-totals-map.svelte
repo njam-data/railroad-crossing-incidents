@@ -58,7 +58,7 @@
         id: 'county_totals',
         type: 'fill',
         source: 'county_totals',
-        // 'source-layer': 'county_totals',
+        'source-layer': 'county_totals',
         'layout': {},
         'paint': {
           'fill-color': {
@@ -86,7 +86,7 @@
         id: 'county_totals_lines',
         type: 'line',
         source: 'county_totals',
-        // 'source-layer': 'county_totals',
+        'source-layer': 'county_totals',
         'layout': {},
         'paint': {
           'line-color': '#444',
