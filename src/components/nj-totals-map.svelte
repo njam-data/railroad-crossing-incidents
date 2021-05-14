@@ -2,11 +2,13 @@
   import { onMount, setContext } from 'svelte'
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { njMapState } from '$lib/stores.js'
+  import njCountyTotals from '$data/nj-county-totals.geo.json'
 
   let container
   let map
   let mapbox
   let selectedProperty = 'accidents'
+  let selectedFeature = null
 
   setContext(mapKey, {
     getMap: () => map
@@ -44,20 +46,27 @@
       minZoom: 7,
       maxZoom: 14
     })
+    map.showTileBoundaries = true
+    // map.addControl(new mapbox.Navigation())
 
     map.on('load', () => {
-      map.resize()
+      // map.resize()
+
+      // map.addSource('county_totals', {
+      //   type: 'vector',
+      //   tiles: ['https://njam-tiles.s3.amazonaws.com/railroad-crossing-incident-totals/counties/{z}/{x}/{y}.pbf']
+      // })
 
       map.addSource('county_totals', {
-        type: 'vector',
-        tiles: ['https://njam-tiles.s3.amazonaws.com/railroad-crossing-incident-totals/counties/{z}/{x}/{y}.pbf']
+        type: 'geojson',
+        data: njCountyTotals
       })
 
       map.addLayer({
         id: 'county_totals',
         type: 'fill',
         source: 'county_totals',
-        'source-layer': 'county_totals',
+        // 'source-layer': 'county_totals',
         'layout': {},
         'paint': {
           'fill-color': {
@@ -85,7 +94,7 @@
         id: 'county_totals_lines',
         type: 'line',
         source: 'county_totals',
-        'source-layer': 'county_totals',
+        // 'source-layer': 'county_totals',
         'layout': {},
         'paint': {
           'line-color': '#444',
@@ -94,62 +103,16 @@
       })
     })
 
-    let popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false
-    })
-
-    let hoveredStateId = null
-
-    map.on('mouseenter', 'county_totals', function (e) {
+    map.on('mousemove', 'county_totals', function (e) {
       map.getCanvas().style.cursor = 'pointer'
-
-      // if (e.features.length > 0) {
-      //   if (hoveredStateId !== null) {
-      //     map.setFeatureState(
-      //       { source: 'county_totals', sourceLayer: 'county_totals', id: hoveredStateId },
-      //       { hover: false }
-      //     )
-      //   }
-      //   hoveredStateId = e.features[0].id;
-      //   map.setFeatureState(
-      //     { source: 'county_totals', sourceLayer: 'county_totals', id: hoveredStateId },
-      //     { hover: true }
-      //   )
-      // }
     })
 
     map.on('mouseleave', 'county_totals', function () {
       map.getCanvas().style.cursor = ''
-      popup.remove()
-      // if (hoveredStateId !== null) {
-      //   map.setFeatureState(
-      //     { source: 'county_totals', sourceLayer: 'county_totals', id: hoveredStateId },
-      //     { hover: false }
-      //   )
-      // }
-      // hoveredStateId = null;
     })
 
     map.on('click', 'county_totals', async function (e) {
-      const feature = e.features[0]
-      const properties = feature.properties
-      console.log('feature', feature, e)
-      const coordinates = e.lngLat
-
-      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-      }
-
-      const description = `<div class="pa-4 rounded">
-        <h1 class="font-bold text-xl">${properties.name}</h1>
-        <ul class="text-lg">
-          <li>${properties.accidents} accidents</li>
-          <li>${properties.killed} killed</li>
-          <li>${properties.injured} injured</li>
-        </ul>
-      </div>`
-      popup.setLngLat(coordinates).setHTML(description).addTo(map)
+      selectedFeature = e.features[0]
     })
 
     return () => {
@@ -163,7 +126,7 @@
     <slot></slot>
   {/if}
 
-  <div class="relative z-10 inline-flex shadow-sm rounded-md top-2 left-2">
+  <div class="absolute z-10 inline-flex shadow-sm rounded-md top-4 left-4">
     <button
       type="button"
       on:click={() => { selectProperty('accidents') }}
@@ -247,4 +210,23 @@
       Injured
     </button>
   </div>
+
+  {#if selectedFeature}
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">
+    <div class="px-4 py-4 sm:px-6">
+      <h3 class="text-xl leading-6 font-medium text-gray-900">
+        {selectedFeature.properties.name}
+      </h3>
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        {selectedFeature.properties.accidents} Accidents
+      </p>
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        {selectedFeature.properties.killed} Killed
+      </p>
+      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        {selectedFeature.properties.injured} Injured
+      </p>
+    </div>
+  </div>
+  {/if}
 </div>

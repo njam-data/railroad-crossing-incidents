@@ -73,6 +73,8 @@
       maxZoom: 20
     })
 
+    // map.addControl(new mapbox.Navigation())
+
     map.addControl(
       new MapboxGeocoder({
         accessToken: mapbox.accessToken,
@@ -141,7 +143,7 @@
       const properties = feature.properties
       const geometry = feature.geometry
       const coordinates = geometry.coordinates.slice();
-      
+
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
       }

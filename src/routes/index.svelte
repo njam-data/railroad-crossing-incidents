@@ -101,7 +101,7 @@
       $page.query.delete('lng')
       $page.query.delete('lat')
       const queryString = $page.query.toString()
-      console.log('not the map', queryString)
+
       if (browser) {
         goto(`${base}?${queryString}`)
       }
@@ -112,7 +112,7 @@
     $page.query.set('view', view)
     selectedView = view
     const queryString = $page.query.toString()
-console.log(`${base}/${$page.path}?${queryString}`)
+
     if (browser) {
       await goto(`${base}?${queryString}`) 
     }
@@ -141,8 +141,8 @@ console.log(`${base}/${$page.path}?${queryString}`)
 
 <svelte:head>
   <title>Railroad Crossing Incidents</title>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.13.1/mapbox-gl.css' rel='stylesheet' />
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
   <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
 </svelte:head>

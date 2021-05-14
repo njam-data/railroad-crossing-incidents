@@ -5,6 +5,7 @@ import pointsWithinPolygon from '@turf/points-within-polygon'
 import pointInPolygon from '@turf/boolean-point-in-polygon'
 import xlsx from 'node-xlsx'
 import { join } from 'desm'
+import { getMunicipalities } from '@njam-data/new-jersey-municipalities'
 
 import { writeJson, readJson } from './lib/fs.js'
 
@@ -16,6 +17,8 @@ const unmatchedFeaturesFile = path.join(dataDirectory, 'unmatched-features.json'
 const workSheetsFromFile = xlsx.parse(sourceDataFile)
 
 const statesGeojson = await readJson(path.join(dataDirectory, 'us-states.geojson'))
+const countiesGeojson = await readJson(path.join(dataDirectory, 'source', 'counties.geojson'))
+const municipalitiesGeojson = await getMunicipalities('geojson')
 
 const [worksheet] = workSheetsFromFile
 const headers = worksheet.data.shift()
@@ -28,7 +31,7 @@ const data = worksheet.data.map((row, rowIndex) => {
   }, {})
 
   if (!objRow.Longitude || !objRow.Latitude) {
-    console.log('error!', objRow)
+    // console.log('error!', objRow)
     errors.push({
       error: 'coordinates missing',
       data: objRow
@@ -50,7 +53,7 @@ const data = worksheet.data.map((row, rowIndex) => {
 
     return point
   } catch (e) {
-    console.log('error!', objRow)
+    // console.log('error!', objRow)
     errors.push({
       error: 'coordinates malformed',
       data: objRow
@@ -66,19 +69,63 @@ console.log('geojson length', geojson.features.length)
 // const filteredGeojson = pointsWithinPolygon(geojson, statesGeojson)
 // console.log('filtered geojson length', filteredGeojson.features.length)l
 const notMatched = []
-const matchedGeojson = turf.featureCollection(geojson.features.filter((feature) => {
-  return statesGeojson.features.find((state) => {
-    if (pointInPolygon(feature, state) && state.properties.STUSPS === feature.properties.StateName) {
-      return true
+const notMatchedReasons = []
+const matchedGeojson = turf.featureCollection(geojson.features.filter((feature, i) => {
+  const unmatchedReasons = []
+  const matched = statesGeojson.features.find((state) => {
+    if (pointInPolygon(feature, state) && state.properties.STUSPS.toLowerCase() === feature.properties.StateName.toLowerCase()) {
+      if (feature.properties.StateName === 'NJ') {
+        return municipalitiesGeojson.features.find((muni) => {
+          const matchingMuni = pointInPolygon(feature, muni) && muni.properties.mun.toLowerCase().includes(feature.properties.CityName.toLowerCase())
+
+          if (!matchingMuni) {
+            unmatchedReasons.push({
+              type: 'nj muni',
+              properties: muni.properties
+            })
+          }
+
+          return matchingMuni
+        })
+      } else {
+        return countiesGeojson.features.find((county) => {
+          const matchingCounty = pointInPolygon(feature, county) && county.properties.NAME10.toLowerCase() === feature.properties.CountyName.toLowerCase()
+
+          if (!matchingCounty) {
+            unmatchedReasons.push({
+              type: 'county',
+              properties: county.properties
+            })
+          }
+
+          return matchingCounty
+        })
+      }
     } else {
+      unmatchedReasons.push({
+        type: 'state',
+        properties: state.properties
+      })
       return false
     }
   })
+
+  if (!matched) {
+    notMatched.push(feature.properties)
+    notMatchedReasons.push({
+      properties: feature.properties,
+      reasons: unmatchedReasons
+    })
+  }
+
+  console.log('unmatched count:', notMatched.length, 'total processed:', i)
+  return matched
 }))
+
 console.log('notMatched length', notMatched.length)
 console.log('matched geojson length', matchedGeojson.features.length)
 await writeJson(targetGeojsonDataFile, matchedGeojson)
-// await writeJson(unmatchedFeaturesFile, notMatched)
+await writeJson(unmatchedFeaturesFile, notMatched)
 
 // const json = geojson.features.map((feature) => {
 //   return feature.properties
