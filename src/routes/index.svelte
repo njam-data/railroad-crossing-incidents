@@ -79,6 +79,7 @@
 </script>
 
 <script>
+  import { sendHeightOnPoll, sendFrameHeight } from '@newswire/frames'
   import { browser } from '$app/env'
   import { page } from '$app/stores'
   import { base } from '$app/paths';
@@ -106,6 +107,11 @@
         goto(`${base}?${queryString}`)
       }
     }
+  }
+
+  if (browser) {
+    sendFrameHeight(1000)
+    sendHeightOnPoll(150)
   }
 
   async function selectView (view) {
@@ -147,7 +153,7 @@
   <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
 </svelte:head>
 
-<div class="flex flex-col h-screen">
+<div class="flex flex-col h-screen border border-gray-100">
   <div class="flex-none p-4">
     <h1 class="font-bold text-gray-600">Railroad Crossing Incidents</h1>
   </div>
@@ -163,7 +169,7 @@
   </div>
 
   <div class="flex-none hidden sm:block">
-    <nav class="relative z-0 shadow flex divide-x divide-gray-200 border-t border-gray-200 border-" aria-label="Tabs">
+    <nav class="relative z-0 shadow flex divide-x divide-gray-200 border-t border-gray-100 border-" aria-label="Tabs">
       <button
         on:click={() => { selectView('nj-totals') }}
         class="
@@ -238,16 +244,16 @@
     </nav>
   </div>
 
-  <div class="flex-grow border-t border-gray-300 overflow-hidden">
+  <div class="flex-grow border-t border-gray-200 overflow-hidden">
   {#if selectedView === 'map'}
     <div class="p-4 h-full bg-gray-50">
-      <div class="bg-white border h-full border-gray-300 rounded-md shadow">
+      <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <Map center={center} />
       </div>
     </div>
   {:else if selectedView === 'list'}
     <div class="p-4 h-full bg-gray-50">
-      <div class="bg-white border h-full border-gray-300 rounded-md shadow">
+      <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <List
           rows={rows}
           columns={columns}
@@ -260,20 +266,20 @@
     </div>
   {:else if selectedView === 'us-totals'}
     <div class="p-4 h-full bg-gray-50">
-      <div class="bg-white border h-full border-gray-300 rounded-md shadow">
+      <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <UsTotalsMap />
       </div>
     </div>
     {:else if selectedView === 'nj-totals'}
     <div class="p-4 h-full bg-gray-50">
-      <div class="bg-white border h-full border-gray-300 rounded-md shadow">
+      <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <NjTotalsMap />
       </div>
     </div>
   {/if}
   </div>
 
-  <div class="flex-none p-4 text-sm text-gray-500 border border-gray-300">
-    Credits
+  <div class="flex-none p-4 text-xs text-gray-500 border-t border-gray-200">
+    Story by Payton Guion. Graphics by Seth Vincent. <br>Data from the Federal Railroad Administration.
   </div>
 </div>

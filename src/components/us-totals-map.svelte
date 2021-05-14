@@ -144,7 +144,7 @@
     <slot></slot>
   {/if}
 
-  <div class="absolute z-10 inline-flex shadow-sm rounded-md top-2 left-2">
+  <div class="absolute z-10 flex flex-col sm:flex-row shadow-sm rounded-md top-4 left-4">
     <button
       type="button"
       on:click={() => { selectProperty('accidents') }}
@@ -155,7 +155,9 @@
         items-center
         px-4
         py-2
-        rounded-l-md
+        rounded-t-md
+        sm:rounded-l-md
+        sm:rounded-tr-none
         border
         border-gray-300
         bg-white
@@ -177,7 +179,7 @@
       on:click={() => { selectProperty('killed') }}
       class:selected="{selectedProperty === 'killed'}"
       class="
-        -ml-px
+        sm:-ml-px
         relative
         inline-flex
         items-center
@@ -204,13 +206,15 @@
       on:click={() => { selectProperty('injured') }}
       class:selected="{selectedProperty === 'injured'}"
       class="
-        -ml-px
+        sm:-ml-px
         relative
         inline-flex
         items-center
         px-4
         py-2
-        rounded-r-md
+        rounded-b-md
+        sm:rounded-r-md
+        sm:rounded-bl-none
         border
         border-gray-300
         bg-white
@@ -230,19 +234,19 @@
   </div>
 
   {#if selectedFeature}
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">
+  <div class="bg-white shadow overflow-hidden rounded-md absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">
     <div class="px-4 py-4 sm:px-6">
-      <h3 class="text-xl leading-6 font-medium text-gray-900">
+      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
         {selectedFeature.properties.name}
       </h3>
       <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.accidents} Accidents
+        {selectedFeature.properties.accidents} <span class="font-normal">Accidents</span>
       </p>
       <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.killed} Killed
+        {selectedFeature.properties.killed} <span class="font-normal">Killed</span>
       </p>
       <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.injured} Injured
+        {selectedFeature.properties.injured} <span class="font-normal">Injured</span>
       </p>
     </div>
   </div>

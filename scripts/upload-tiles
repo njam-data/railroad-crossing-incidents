@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-aws s3 sync data/tiles/railroad-crossing-incidents s3://njam-tiles/railroad-crossing-incidents --delete
-aws s3 sync data/tiles/railroad-crossing-incident-totals/municipalities s3://njam-tiles/railroad-crossing-incident-totals/municipalities --delete
+# aws s3 sync data/tiles/railroad-crossing-incidents s3://njam-tiles/railroad-crossing-incidents --delete
+# aws s3 sync data/tiles/railroad-crossing-incident-totals/municipalities s3://njam-tiles/railroad-crossing-incident-totals/municipalities --delete
 aws s3 sync data/tiles/railroad-crossing-incident-totals/states s3://njam-tiles/railroad-crossing-incident-totals/states --delete
-aws s3 sync data/tiles/railroad-crossing-incident-totals/counties s3://njam-tiles/railroad-crossing-incident-totals/counties --delete
+# aws s3 sync data/tiles/railroad-crossing-incident-totals/counties s3://njam-tiles/railroad-crossing-incident-totals/counties --delete

@@ -83,8 +83,8 @@ const statesGeojson = featureCollection(objectToArray(stateTotals).map((state) =
   }
 
   feature.properties = {
-    name: state.NAME,
-    ...state
+    ...state,
+    name: feature.properties.NAME
   }
 
   return feature

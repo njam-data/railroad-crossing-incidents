@@ -66,8 +66,7 @@ const data = worksheet.data.map((row, rowIndex) => {
 
 const geojson = turf.featureCollection(data)
 console.log('geojson length', geojson.features.length)
-// const filteredGeojson = pointsWithinPolygon(geojson, statesGeojson)
-// console.log('filtered geojson length', filteredGeojson.features.length)l
+
 const notMatched = []
 const notMatchedReasons = []
 const matchedGeojson = turf.featureCollection(geojson.features.filter((feature, i) => {
