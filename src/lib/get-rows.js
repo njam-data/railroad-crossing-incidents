@@ -1,0 +1,63 @@
+export function getRows (json) {
+  const excludeColumns = [
+    'rowid',
+    'Latitude',
+    'Longitude',
+  ]
+  
+  const orderColumns = [
+    'Meets minimum safety guidelines',
+    'Total Killed',
+    'Total injured',
+    'Number of accidents',
+    'Street',
+    'CityName',
+    'CountyName',
+    'StateName',
+    'Active or Passive?',
+    'Distance from highway (feet)',
+    'Daily trains',
+    'Max train speed',
+    'Gates',
+    'Lights',
+    'Daily traffic',
+    'Last time traffic counted',
+    'School buses',
+    'Bus count',
+    'Railroad',
+    'CrossingID'
+  ]
+
+  const columns = ['link', ...json.columns]
+
+  let rows = json.rows.map((row) => {
+    return columns.map((column, i) => {
+      const exclude = excludeColumns.find((prop) => {
+        return prop.includes(column)
+      })
+
+      if (!exclude) {
+        if (column === 'link') {
+          return {
+            key: 'Map view',
+            value: [row[12], row[11]]
+          }
+        }
+
+        return {
+          key: column,
+          value: row[i - 1]
+        }
+      }
+    })
+    .filter((column) => !!column)
+    .sort((a, b) => {
+      return orderColumns.indexOf(a.key) - orderColumns.indexOf(b.key)
+    })
+  })
+
+  return {
+    rows,
+    columns
+  }
+}

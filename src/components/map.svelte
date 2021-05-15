@@ -101,8 +101,8 @@
           'circle-radius': [
             'case',
             ['has', 'sqrt_point_count'],
-            ['+', ['*', ['get', 'sqrt_point_count'], 1.3], 5],
-            5
+            ['+', ['*', ['get', 'sqrt_point_count'], 1.1], 10],
+            10
           ],
           'circle-color': [
             'case',

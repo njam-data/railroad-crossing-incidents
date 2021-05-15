@@ -1,67 +1,14 @@
 <script context="module">
+  import { getRows } from '$lib/get-rows.js'
+
   export async function load ({ fetch, page }) {
-    const url = 'https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?StateName__exact=NJ&_sort=CountyName'
+    const url = 'https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?&_sort=StateName'
     const res = await fetch(url)
     const json = await res.json()
     console.log('json', json)
 
-    const excludeColumns = [
-      'rowid',
-      'Latitude',
-      'Longitude',
-    ]
-
-    const orderColumns = [
-      'Meets minimum safety guidelines',
-      'Total Killed',
-      'Total injured',
-      'Number of accidents',
-      'Street',
-      'CityName',
-      'CountyName',
-      'StateName',
-      'Active or Passive?',
-      'Distance from highway (feet)',
-      'Daily trains',
-      'Max train speed',
-      'Gates',
-      'Lights',
-      'Daily traffic',
-      'Last time traffic counted',
-      'School buses',
-      'Bus count',
-      'Railroad',
-      'CrossingID'
-    ]
-
     if (res.ok) {
-      const columns = ['link', ...json.columns]
-
-      let rows = json.rows.map((row) => {
-        return columns.map((column, i) => {
-          const exclude = excludeColumns.find((prop) => {
-            return prop.includes(column)
-          })
-
-          if (!exclude) {
-            if (column === 'link') {
-              return {
-                key: 'Map view',
-                value: [row[12], row[11]]
-              }
-            }
-
-            return {
-              key: column,
-              value: row[i - 1]
-            }
-          }
-        })
-        .filter((column) => !!column)
-        .sort((a, b) => {
-          return orderColumns.indexOf(a.key) - orderColumns.indexOf(b.key)
-        })
-      })
+      const { rows, columns } = getRows(json)
 
       return {
         props: {
@@ -92,6 +39,54 @@
   export let rows
   export let columns
   let selectedView = $page.query.get('view') || 'nj-totals'
+
+  function ok (wut) {
+    console.log('wut', wut)
+  }
+
+  async function requestRows (queryObject) {
+    const { sort, filters } = queryObject
+    console.log('weeeeeeeeoooooooooooo')
+    let sortFragment = ''
+    if (sort.column) {
+      sortFragment = `_sort${sort.order === 'DESC' ? '_desc' : ''}=${sort.column}`
+    }
+
+    const filterFragments = []
+    if (filters.length) {
+      for (const filter of filters) {
+        if (filter.column === 'StateName') {
+          filterFragments.push(
+            `StateName__exact=${filter.value}`
+          )
+        } else if (filter.column === 'CountyName') {
+          filterFragments.push(
+            `CountyName__like=${filter.value}`
+          )
+        } else if (filter.column === 'CityName') {
+          filterFragments.push(
+            `CityName__like=${filter.value}`
+          )
+        }
+      }
+    }
+
+    const queryFragments = [
+      ...filterFragments,
+      sortFragment
+    ]
+
+    const querystring = queryFragments.join('&')
+
+    const url = `https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?${querystring}`
+    console.log('url', url)
+    const res = await fetch(url)
+    const json = await res.json()
+    console.log('json', json)
+    const obj = getRows(json)
+    rows = [...obj.rows]
+    columns = [...obj.columns]
+  }
 
   $: lng = $page.query.get('lng')
   $: lat = $page.query.get('lat')
@@ -124,8 +119,9 @@
     }
   }
 
-  function onListFilter (e) {
-    console.log('filter', e)
+  async function onListQuery (e) {
+    console.log('query', e.detail)
+    await requestRows(e.detail)
   }
 
   function onListSort (e) {
@@ -247,9 +243,7 @@
         <List
           rows={rows}
           columns={columns}
-          on:filter={onListFilter}
-          on:sort={onListSort}
-          on:search={onListSearch}
+          on:query={onListQuery}
           on:viewLocation={onViewLocation}
         />
       </div>
