@@ -40,13 +40,8 @@
   export let columns
   let selectedView = $page.query.get('view') || 'nj-totals'
 
-  function ok (wut) {
-    console.log('wut', wut)
-  }
-
   async function requestRows (queryObject) {
     const { sort, filters } = queryObject
-    console.log('weeeeeeeeoooooooooooo')
     let sortFragment = ''
     if (sort.column) {
       sortFragment = `_sort${sort.order === 'DESC' ? '_desc' : ''}=${sort.column}`
