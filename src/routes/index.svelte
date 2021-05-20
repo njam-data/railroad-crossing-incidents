@@ -8,11 +8,28 @@
 console.log('json', json)
     if (res.ok) {
       const { rows, columns } = getRows(json)
+console.log('json next', json.next)
 
+      const rowsCount = json.filtered_table_rows_count
+
+      let next = null
+      if (json.next) {
+        if (json.next.includes(',')) {
+          next = json.next.split(',')[1]
+        } else {
+          next = json.next
+        }
+      } else {
+        next = json.next
+      }
+
+      console.log('next', next)
       return {
         props: {
           rows,
-          columns
+          columns,
+          next,
+          rowsCount
         }
       }
     }
@@ -37,10 +54,20 @@ console.log('json', json)
 
   export let rows
   export let columns
+  export let next
+  export let rowsCount
+
+  let loaded = true
+  let currentPage = 1
+
   let selectedView = $page.query.get('view') || 'nj-totals'
 
   async function requestRows (queryObject) {
+    loaded = false
     const { sort, filters } = queryObject
+
+    const nextFragment = next ? `_next=${next}` : ''
+
     let sortFragment = ''
     if (sort.column) {
       sortFragment = `_sort${sort.order === 'DESC' ? '_desc' : ''}=${sort.column}`
@@ -66,20 +93,35 @@ console.log('json', json)
     }
 
     const queryFragments = [
+      nextFragment,
       ...filterFragments,
       sortFragment
     ]
 
     const querystring = queryFragments.join('&')
-
     const url = `https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?${querystring}`
     console.log('url', url)
     const res = await fetch(url)
     const json = await res.json()
-console.log('json', json)
+    console.log('json', json)
     const obj = getRows(json)
     rows = [...obj.rows]
     columns = [...obj.columns]
+    rowsCount = json.filtered_table_rows_count
+    const firstRowId = json.rows[0][0]
+    console.log('firstRowId', firstRowId)
+
+    if (json.next) {
+      if (json.next.includes(',')) {
+        next = json.next.split(',')[1]
+      } else {
+        next = json.next
+      }
+    } else {
+      next = json.next
+    }
+
+    loaded = true
   }
 
   $: lng = $page.query.get('lng')
@@ -114,11 +156,26 @@ console.log('json', json)
   }
 
   async function onListQuery (e) {
+    next = null
+    currentPage = 1
     await requestRows(e.detail)
   }
 
-  function onNextRequest (e) {
-    console.log('next', e)
+  async function onNextPage (e) {
+    console.log('next')
+    currentPage = currentPage + 1
+    await requestRows(e.detail)
+  }
+
+  async function onPreviousPage (e) {
+    console.log('previous')
+    next = next - 200
+    if (next < 0) {
+      next = null
+      currentPage = 1
+    }
+    currentPage = currentPage - 1
+    await requestRows(e.detail)
   }
 
   function onViewLocation (e) {
@@ -171,7 +228,7 @@ console.log('json', json)
       "
       aria-current="page"
     >
-      <span>List</span>
+      <span>Locations</span>
       <span
         aria-hidden="true"
         class="
@@ -180,7 +237,7 @@ console.log('json', json)
         "
       ></span>
     </button>
-      
+
       <button
         on:click={() => { selectView('nj-totals') }}
         class="
@@ -227,13 +284,18 @@ console.log('json', json)
       </div>
     </div>
   {:else if selectedView === 'list'}
-    <div class="p-4 h-full bg-gray-50">
+    <div class="p-4 pb-12 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <List
-          rows={rows}
-          columns={columns}
+          {rows}
+          {columns}
+          {next}
+          {rowsCount}
+          {loaded}
+          {currentPage}
           on:query={onListQuery}
-          on:nextRequest={onNextRequest}
+          on:nextPage={onNextPage}
+          on:previousPage={onPreviousPage}
           on:viewLocation={onViewLocation}
         />
       </div>

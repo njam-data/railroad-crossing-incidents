@@ -8,6 +8,10 @@
   import XIcon from '$components/icons/x.svelte'
 
   export let rows
+  export let next
+  export let rowsCount
+  export let loaded
+  export let currentPage
 
   let filters = []
   let sort = {
@@ -122,8 +126,18 @@
     })
   }
 
-  function onNextPage (value) {
-    dispatch('nextPage')
+  function onNextPageClick (value) {
+    dispatch('nextPage', {
+      sort,
+      filters
+    })
+  }
+
+  function onPreviousPageClick (value) {
+    dispatch('previousPage', {
+      sort,
+      filters
+    })
   }
 
   function onRowClick (value) {
@@ -225,4 +239,42 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="">
+  {#if loaded}
+  <p class="float-left py-1.5 mt-2 text-xs text-gray-700">
+    {#if currentPage > 1}
+      {currentPage * 100 - 100 + 1}
+      to
+      {#if currentPage * 100 > rowsCount}
+        {rowsCount}
+      {:else}
+        {currentPage * 100}
+      {/if}
+    {:else}
+      1 to 100
+    {/if}
+
+    of {rowsCount} total rows.
+  </p>
+  {/if}
+
+  {#if next}
+  <button
+    on:click={onNextPageClick}
+    class="mt-2 float-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+  >
+    Next page
+  </button>
+  {/if}
+
+  {#if currentPage > 1}
+  <button
+    on:click={onPreviousPageClick}
+    class="mt-2 mr-2 float-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+  >
+    Previous page
+  </button>
+  {/if}
 </div>

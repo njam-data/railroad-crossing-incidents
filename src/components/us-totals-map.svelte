@@ -157,7 +157,7 @@
     <slot></slot>
   {/if}
 
-  <div class="absolute z-10 flex flex-col sm:flex-row shadow-sm rounded-md top-4 left-4">
+  <div class="absolute z-10 flex flex-col sm:flex-row shadow-sm rounded-md top-2 left-2">
     <button
       type="button"
       on:click={() => { selectProperty('accidents') }}
