@@ -6,6 +6,7 @@
   import CheckIcon from '$components/icons/check.svelte'
   import QuestionIcon from '$components/icons/question.svelte'
   import XIcon from '$components/icons/x.svelte'
+  import Legend from '$components/legend-points.svelte'
 
   export let center
 
@@ -14,6 +15,17 @@
   let mapbox
   let selectedFeature = null
   let properties
+
+  const points = [
+    {
+      color: 'red',
+      description: 'Accidents'
+    },
+    {
+      color: 'blue',
+      description: 'No accidents'
+    }
+  ]
 
   const excludeProperties = [
     'id',
@@ -248,7 +260,11 @@
     {#if map}
       <slot></slot>
     {/if}
+
+    <Legend {points} />
   </div>
+
+
 
   <div class="bg-white h-1/2 sm:w-1/2 sm:h-full md:w-96 border-gray-200 border-t sm:border-t-0 sm:border-l">
     <div class="h-full overflow-y-scroll">

@@ -3,11 +3,21 @@
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { njMapState } from '$lib/stores.js'
 
+  import Legend from '$components/legend-scale.svelte'
+
   let container
   let map
   let mapbox
   let selectedProperty = 'accidents'
   let selectedFeature = null
+
+  const legendTitles = {
+    accidents: 'Number of accidents',
+    injured: 'Number of accidents with injuries',
+    killed: 'Number of accidents with fatalities'
+  }
+
+  $: legendTitle = legendTitles[selectedProperty]
 
   setContext(mapKey, {
     getMap: () => map
@@ -17,19 +27,21 @@
     getMapbox: () => mapbox
   })
 
+  const scale = [
+    [ 0, '#fcde9c'],
+    [ 15, '#faa476'],
+    [ 30, '#f0746e'],
+    [ 45, '#e34f6f'],
+    [ 60, '#dc3977'],
+    [ 75, '#b9257a'],
+    [ 90, '#7c1d6f']
+  ]
+
   function selectProperty (prop) {
     selectedProperty = prop
     map.setPaintProperty('county_totals', 'fill-color', {
       property: selectedProperty,
-      stops: [
-        [ 0, '#fcde9c'],
-        [ 15, '#faa476'],
-        [ 30, '#f0746e'],
-        [ 45, '#e34f6f'],
-        [ 60, '#dc3977'],
-        [ 75, '#b9257a'],
-        [ 90, '#7c1d6f']
-      ]
+      stops: scale
     })
   }
 
@@ -209,6 +221,8 @@
       Injured
     </button>
   </div>
+
+  <Legend scale={scale} title={legendTitle} />
 
   {#if selectedFeature}
   <div class="bg-white shadow overflow-hidden rounded-md absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">

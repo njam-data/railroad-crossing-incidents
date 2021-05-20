@@ -3,51 +3,61 @@
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { usMapState } from '$lib/stores.js'
 
+  import Legend from '$components/legend-scale.svelte'
+
   let container
   let map
   let mapbox
   let selectedProperty = 'accidents'
   let selectedFeature = null
 
+  const legendTitles = {
+    accidents: 'Number of accidents',
+    injured: 'Number of accidents with injuries',
+    killed: 'Number of accidents with fatalities'
+  }
+
+  const scales = {
+    accidents: [
+      [0, '#fcde9c'],
+      [500, '#faa476'],
+      [1000, '#f0746e'],
+      [2000, '#e34f6f'],
+      [4000, '#dc3977'],
+      [8000, '#b9257a'],
+      [16000, '#7c1d6f']
+    ],
+    injured: [
+      [0, '#fcde9c'],
+      [250, '#faa476'],
+      [500, '#f0746e'],
+      [750, '#e34f6f'],
+      [1000, '#dc3977'],
+      [1250, '#b9257a'],
+      [1500, '#7c1d6f']
+    ],
+    killed: [
+      [0, '#fcde9c'],
+      [825, '#faa476'],
+      [1750, '#f0746e'],
+      [2625, '#e34f6f'],
+      [3500, '#dc3977'],
+      [4375, '#b9257a'],
+      [6175, '#7c1d6f']
+    ]
+  }
+
+  $: legendTitle = legendTitles[selectedProperty]
+  $: scale = scales[selectedProperty]
+
   function selectProperty (prop) {
     console.log('prop', prop)
     selectedProperty = prop
-    let stops
-    if (prop === 'accidents') {
-      stops = [
-        [ 0, '#fcde9c'],
-        [ 500, '#faa476'],
-        [ 1000, '#f0746e'],
-        [ 2000, '#e34f6f'],
-        [ 4000, '#dc3977'],
-        [ 8000, '#b9257a'],
-        [ 16000, '#7c1d6f']
-      ]
-    } else if (prop === 'killed') {
-      stops = [
-        [ 0, '#fcde9c'],
-        [ 250, '#faa476'],
-        [ 500, '#f0746e'],
-        [ 750, '#e34f6f'],
-        [ 1000, '#dc3977'],
-        [ 1250, '#b9257a'],
-        [ 1500, '#7c1d6f']
-      ]
-    } else if (prop === 'injured') {
-      stops = [
-        [ 0, '#fcde9c'],
-        [ 825, '#faa476'],
-        [ 1750, '#f0746e'],
-        [ 2625, '#e34f6f'],
-        [ 3500, '#dc3977'],
-        [ 4375, '#b9257a'],
-        [ 6175, '#7c1d6f']
-      ]
-    }
+    const stops = scale
 
     map.setPaintProperty('state_totals', 'fill-color', {
       property: selectedProperty,
-      stops: stops
+      stops
     })
   }
 
@@ -235,6 +245,8 @@
       Injured
     </button>
   </div>
+
+  <Legend scale={scale} title={legendTitle} />
 
   {#if selectedFeature}
   <div class="bg-white shadow overflow-hidden rounded-md absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">

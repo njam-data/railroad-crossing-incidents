@@ -5,8 +5,7 @@
     const url = 'https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?&_sort=StateName'
     const res = await fetch(url)
     const json = await res.json()
-    console.log('json', json)
-
+console.log('json', json)
     if (res.ok) {
       const { rows, columns } = getRows(json)
 
@@ -77,7 +76,7 @@
     console.log('url', url)
     const res = await fetch(url)
     const json = await res.json()
-    console.log('json', json)
+console.log('json', json)
     const obj = getRows(json)
     rows = [...obj.rows]
     columns = [...obj.columns]
@@ -115,16 +114,11 @@
   }
 
   async function onListQuery (e) {
-    console.log('query', e.detail)
     await requestRows(e.detail)
   }
 
-  function onListSort (e) {
-    console.log('sort', e)
-  }
-
-  function onListSearch (e) {
-    console.log('search', e)
+  function onNextRequest (e) {
+    console.log('next', e)
   }
 
   function onViewLocation (e) {
@@ -239,6 +233,7 @@
           rows={rows}
           columns={columns}
           on:query={onListQuery}
+          on:nextRequest={onNextRequest}
           on:viewLocation={onViewLocation}
         />
       </div>
