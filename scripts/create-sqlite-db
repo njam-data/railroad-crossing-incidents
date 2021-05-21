@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+geojson-to-sqlite data/railroad_crossing_incidents.db railroad_crossing_incidents data/railroad-crossing-incidents.geojson

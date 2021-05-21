@@ -4,6 +4,8 @@ export function getRows (json) {
     'Latitude',
     'Longitude',
     'Active or Passive?',
+    'geometry',
+    'undefined'
   ]
 
   const orderColumns = [

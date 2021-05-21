@@ -224,7 +224,7 @@
                       <div use:clickOutside on:click_outside={(e) => { onOutsideMenuClick(column, e) }} class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                         <div class="" role="none">
                           <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                          <button type="button" on:click={() => onSort(column, 'ASC')} class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-0">
+                          <button type="button" on:click={() => onSort(column, 'ASC')} class="w-full text-left text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-0">
                             <span class="inline-block w-3 h-3">
                               {#if sort.column === column && sort.order === 'ASC'}
                               ✓
@@ -232,7 +232,7 @@
                             </span>
                             Sort Ascending
                           </button>
-                          <button type="button" on:click={() => onSort(column, 'DESC')} class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-1">
+                          <button type="button" on:click={() => onSort(column, 'DESC')} class="w-full text-left text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-1">
                             <span class="inline-block w-3 h-3">
                               {#if sort.column === column && sort.order === 'DESC'}
                               ✓
@@ -240,8 +240,8 @@
                             </span>
                             Sort Descending
                           </button>
-                          <button type="button" on:click={() => onRemoveSort(column)} class="text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-2">
-                            <span class="inline-block w-3 h-3">𐄂</span>
+                          <button type="button" on:click={() => onRemoveSort(column)} class="w-full text-left text-gray-700 hover:text-gray-900 hover:bg-gray-100 block px-2 py-2 text-xs" role="menuitem" tabindex="-1" id="menu-item-2">
+                            <span class="inline-block w-3 h-3 invisible hover:visible">𐄂</span>
                             Remove Sort
                           </button>
                         </div>
@@ -272,7 +272,9 @@
                         <QuestionIcon /> Info unavailable
                       {/if}
                     {:else}
-                    {cell.value}
+                      {#if cell.value !== null}
+                        {cell.value}
+                      {/if}
                     {/if}
                   </td>
                 {/each}

@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+datasette publish vercel data/railroad_crossing_incidents.db --project railroad-crossing-incidents

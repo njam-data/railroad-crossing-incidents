@@ -2,7 +2,7 @@
   import { getRows } from '$lib/get-rows.js'
 
   export async function load ({ fetch, page }) {
-    const url = 'https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?&_sort=StateName'
+    const url = 'https://railroad-crossing-incidents.vercel.app/railroad_crossing_incidents/railroad_crossing_incidents.json'
     const res = await fetch(url)
     const json = await res.json()
 
@@ -97,7 +97,7 @@
     ]
 
     const querystring = queryFragments.join('&')
-    const url = `https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?${querystring}`
+    const url = `https://railroad-crossing-incidents.vercel.app/railroad_crossing_incidents/railroad_crossing_incidents.json?${querystring}`
     const res = await fetch(url)
     const json = await res.json()
     const obj = getRows(json)
