@@ -273,7 +273,7 @@
         Railroad crossing accidents in New Jersey counties
       </h3>
       <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
-        Click counties to see the total accidents and the number of accidents with injuries and fatalities.
+        Click counties to see the total railroad crossing crashes, deaths and injuries. For more information on specific crossings, see the database and interactive map.
       </p>
       {/if}
     </div>

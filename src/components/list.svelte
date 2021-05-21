@@ -192,12 +192,12 @@
 
 <div class="flex flex-col h-full overflow-scroll bg-gray-50">
   <div class="w-full h-96 p-2">
-    <div class="">
+    <div>
       <div id="geocoder"></div>
     </div>
   </div>
 
-  <div class="">
+  <div>
     <div class="align-middle inline-block min-w-full">
       <div class="shadow border-b border-t border-gray-200 sm:rounded-md">
         <table class="min-w-full divide-y divide-gray-200 bg-white">
@@ -258,12 +258,12 @@
             {#each rows as row}
               <tr>
                 {#each row as cell}
-                  <td class="px-4 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td class="px-4 py-4 text-left whitespace-nowrap text-xs font-medium text-gray-900">
                     {#if cell.key === 'Map view'}
                       <button on:click={() => {
                         onRowClick(cell.value)
                       }} class="text-gray-600 hover:text-blue-600 hover:shadow-sm bg-gray-50 hover:bg-gray-100 p-2">View on map</button>
-                    {:else if cell.key === 'Meets minimum safety guidelines'}
+                    {:else if cell.key === 'Meets federal safety guidelines'}
                       {#if cell.value === 'Yes'}
                         <CheckIcon /> Yes
                       {:else if cell.value === 'No'}

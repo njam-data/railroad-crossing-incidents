@@ -85,7 +85,7 @@ const statesGeojson = featureCollection(objectToArray(stateTotals).map((state, i
     name: feature.properties.NAME
   }
 
-  feature.id = `${feature.properties.name}-${i}`
+  feature.id = i
   return feature
 }))
 
@@ -99,7 +99,7 @@ const countiesGeojson = featureCollection(objectToArray(njCountyTotals).map((cou
     name: feature.properties.county_label
   }
 
-  feature.id = `${feature.properties.name}-${i}`
+  feature.id = i
   return feature
 }))
 
@@ -122,7 +122,7 @@ const municipalitiesGeojson = featureCollection(municipalities.features.map((fea
     }
   }
 
-  feature.id = `${feature.properties.name}-${i}`
+  feature.id = i
   return feature
 }))
 

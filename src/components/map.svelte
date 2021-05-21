@@ -39,7 +39,7 @@
     'CityName',
     'CountyName',
     'StateName',
-    'Meets minimum safety guidelines'
+    'Meets federal safety guidelines'
   ]
 
   const labels = {
@@ -236,7 +236,7 @@
       const feature = e.features[0]
       const { point_count } = feature.properties
       map.resize()
-
+console.log('feature', feature)
       if (point_count) {
         const zoom = map.getZoom() + 2
 
@@ -279,12 +279,12 @@
           {selectedFeature.properties.CityName}, {selectedFeature.properties.CountyName}, {selectedFeature.properties.StateName}
         </h3>
         <p class="font-bold my-0 pt-1 pb-3 max-w-2xl text-sm text-gray-600">
-          {#if selectedFeature.properties['Meets minimum safety guidelines'] === 'Yes'}
-            <CheckIcon /> Meets minimum safety guidelines
-          {:else if selectedFeature.properties['Meets minimum safety guidelines'] === 'No'}
-            <XIcon /> Does not meet minimum safety guidelines
+          {#if selectedFeature.properties['Meets federal safety guidelines'] === 'Yes'}
+            <CheckIcon /> Meets federal safety guidelines
+          {:else if selectedFeature.properties['Meets federal safety guidelines'] === 'No'}
+            <XIcon /> Does not meet federal safety guidelines
           {:else}
-            <QuestionIcon /> May or may not meet minimum safety guidelines
+            <QuestionIcon /> May or may not meet federal safety guidelines
           {/if}
         </p>
         <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
@@ -320,8 +320,11 @@
             <h1 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
               Railroad crossing incidents
             </h1>
-            <p class="font-medium text-gray-500 text-xl">
-              Click a point to learn <br>about accidents and other information at that railroad crossing.
+            <p class="font-medium text-gray-700 text-xl">
+              Click a crossing to see its safety data and whether it meets safety guidelines.
+            </p>
+            <p class="text-gray-500 mt-4">
+              This data was retrieved from the Federal Railroad Administration in early April 2021 and the agency acknowledges that it might not offer a complete or accurate picture of U.S. rail crossings.
             </p>
           </div>
         </div>

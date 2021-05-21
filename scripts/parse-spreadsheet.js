@@ -62,8 +62,15 @@ const data = worksheet.data.map((row, rowIndex) => {
   }
 
   objRow.id = rowIndex
+
   objRow.Longitude = Number(objRow.Longitude)
   objRow.Latitude = Number(objRow.Latitude)
+  objRow['Number of accidents'] = Number(objRow['Number of accidents'])
+  objRow['Total Killed'] = Number(objRow['Total Killed'])
+  objRow['Total injured'] = Number(objRow['Total injured'])
+
+  objRow['Meets federal safety guidelines'] = objRow['Meets minimum safety guidelines']
+  delete objRow['Meets minimum safety guidelines']
 
   try {
     const point = turf.point(

@@ -3,18 +3,18 @@ export function getRows (json) {
     'rowid',
     'Latitude',
     'Longitude',
+    'Active or Passive?',
   ]
-  
+
   const orderColumns = [
-    'Meets minimum safety guidelines',
-    'Total Killed',
-    'Total injured',
-    'Number of accidents',
-    'StateName',
-    'CountyName',
     'CityName',
     'Street',
-    'Active or Passive?',
+    'Number of accidents',
+    'Total Killed',
+    'Total injured',
+    'Meets federal safety guidelines',
+    'StateName',
+    'CountyName',
     'Distance from highway (feet)',
     'Daily trains',
     'Max train speed',

@@ -291,10 +291,9 @@
         Railroad crossing accidents in U.S. states
       </h3>
       <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
-        Click states to see the total accidents and the number of accidents with injuries and fatalities.
+        Click states to see the total railroad crossing crashes, deaths and injuries. For more information on specific crossings, see the database and interactive map.
       </p>
       {/if}
     </div>
   </div>
-
 </div>
