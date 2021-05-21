@@ -98,66 +98,66 @@ const data = worksheet.data.map((row, rowIndex) => {
 const geojson = turf.featureCollection(data)
 console.log('geojson length', geojson.features.length)
 
-// const notMatched = []
-// const notMatchedReasons = []
-// const matchedGeojson = turf.featureCollection(geojson.features.filter((feature, i) => {
-//   const unmatchedReasons = []
-//   const matched = statesGeojson.features.find((state) => {
-//     if (pointInPolygon(feature, state) && state.properties.STUSPS.toLowerCase() === feature.properties.StateName.toLowerCase()) {
-//       if (feature.properties.StateName === 'NJ') {
-//         return municipalitiesGeojson.features.find((muni) => {
-//           const matchingMuni = pointInPolygon(feature, muni) && muni.properties.mun.toLowerCase().includes(feature.properties.CityName.toLowerCase())
+const notMatched = []
+const notMatchedReasons = []
+const matchedGeojson = turf.featureCollection(geojson.features.filter((feature, i) => {
+  const unmatchedReasons = []
+  const matched = statesGeojson.features.find((state) => {
+    if (pointInPolygon(feature, state) && state.properties.STUSPS.toLowerCase() === feature.properties.StateName.toLowerCase()) {
+      if (feature.properties.StateName === 'NJ') {
+        return municipalitiesGeojson.features.find((muni) => {
+          const matchingMuni = pointInPolygon(feature, muni) && muni.properties.mun.toLowerCase().includes(feature.properties.CityName.toLowerCase())
 
-//           if (!matchingMuni) {
-//             unmatchedReasons.push({
-//               type: 'nj muni',
-//               properties: muni.properties
-//             })
-//           }
+          if (!matchingMuni) {
+            unmatchedReasons.push({
+              type: 'nj muni',
+              properties: muni.properties
+            })
+          }
 
-//           return matchingMuni
-//         })
-//       } else {
-//         return countiesGeojson.features.find((county) => {
-//           const matchingCounty = pointInPolygon(feature, county) && county.properties.NAME10.toLowerCase() === feature.properties.CountyName.toLowerCase()
+          return matchingMuni
+        })
+      } else {
+        return countiesGeojson.features.find((county) => {
+          const matchingCounty = pointInPolygon(feature, county) && county.properties.NAME10.toLowerCase() === feature.properties.CountyName.toLowerCase()
 
-//           if (!matchingCounty) {
-//             unmatchedReasons.push({
-//               type: 'county',
-//               properties: county.properties
-//             })
-//           }
+          if (!matchingCounty) {
+            unmatchedReasons.push({
+              type: 'county',
+              properties: county.properties
+            })
+          }
 
-//           return matchingCounty
-//         })
-//       }
-//     } else {
-//       unmatchedReasons.push({
-//         type: 'state',
-//         properties: state.properties
-//       })
-//       return false
-//     }
-//   })
+          return matchingCounty
+        })
+      }
+    } else {
+      unmatchedReasons.push({
+        type: 'state',
+        properties: state.properties
+      })
+      return false
+    }
+  })
 
-//   if (!matched) {
-//     notMatched.push(feature.properties)
-//     notMatchedReasons.push({
-//       properties: feature.properties,
-//       reasons: unmatchedReasons
-//     })
-//   }
+  if (!matched) {
+    notMatched.push(feature.properties)
+    notMatchedReasons.push({
+      properties: feature.properties,
+      reasons: unmatchedReasons
+    })
+  }
 
-//   console.log('unmatched count:', notMatched.length, 'total processed:', i)
-//   return matched
-// }))
+  console.log('unmatched count:', notMatched.length, 'total processed:', i)
+  return matched
+}))
 
-// console.log('notMatched length', notMatched.length)
-// console.log('matched geojson length', matchedGeojson.features.length)
-// await writeJson(targetGeojsonDataFile, matchedGeojson)
-// await writeJson(unmatchedFeaturesFile, notMatched)
+console.log('notMatched length', notMatched.length)
+console.log('matched geojson length', matchedGeojson.features.length)
+await writeJson(targetGeojsonDataFile, matchedGeojson)
+await writeJson(unmatchedFeaturesFile, notMatched)
 
-await writeJson(targetGeojsonDataFile, geojson)
+// await writeJson(targetGeojsonDataFile, geojson)
 
 // const json = geojson.features.map((feature) => {
 //   return feature.properties

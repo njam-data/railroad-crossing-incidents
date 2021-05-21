@@ -104,7 +104,6 @@
     rows = [...obj.rows]
     columns = [...obj.columns]
     rowsCount = json.filtered_table_rows_count
-    const firstRowId = json.rows[0][0]
 
     if (json.next) {
       if (json.next.includes(',')) {
@@ -122,6 +121,7 @@
   $: lng = $page.query.get('lng')
   $: lat = $page.query.get('lat')
   $: center = (lng & lat) ? [lng, lat] : null
+  $: bbox = JSON.parse($page.query.get('bbox'))
 
   $: if (selectedView !== 'map') {
     if ($page.query.has('lng') || $page.query.has('lat')) {
@@ -174,10 +174,16 @@
   }
 
   function onViewLocation (e) {
-    const [lng, lat] = e.detail
-    $page.query.set('lng', lng)
-    $page.query.set('lat', lat)
-    center = [lng, lat]
+    if (e.detail.bbox) {
+      bbox = e.detail.bbox
+      $page.query.set('bbox', JSON.stringify(bbox))
+    } else {
+      const [lng, lat] = e.detail
+      $page.query.set('lng', lng)
+      $page.query.set('lat', lat)
+      center = [lng, lat]
+    }
+
     selectView('map')
   }
 </script>
@@ -191,7 +197,7 @@
 </svelte:head>
 
 <div class="flex flex-col h-screen border border-gray-100  max-w-screen-lg mx-auto">
-  <div class="flex-none p-4">
+  <div class="flex-none p-2 sm:p-4">
     <h1 class="font-bold text-gray-600">Railroad Crossing Incidents</h1>
   </div>
 
@@ -201,7 +207,7 @@
       on:click={() => { selectView('map') }}
       class="
         { selectedView === 'map' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
       "
       aria-current="page"
     >
@@ -219,7 +225,7 @@
       on:click={() => { selectView('list') }}
       class="
         { selectedView === 'list' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
       "
       aria-current="page"
     >
@@ -237,7 +243,7 @@
         on:click={() => { selectView('nj-totals') }}
         class="
           { selectedView === 'nj-totals' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
         "
         aria-current="page"
       >
@@ -255,7 +261,7 @@
         on:click={() => { selectView('us-totals') }}
         class="
           { selectedView === 'us-totals' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
         "
         aria-current="page"
       >
@@ -275,7 +281,7 @@
   {#if selectedView === 'map'}
     <div class="p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
-        <Map center={center} />
+        <Map center={center} bbox={bbox} />
       </div>
     </div>
   {:else if selectedView === 'list'}
@@ -298,13 +304,17 @@
   {:else if selectedView === 'us-totals'}
     <div class="p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
-        <UsTotalsMap />
+        <UsTotalsMap
+          on:viewLocation={onViewLocation}
+        />
       </div>
     </div>
     {:else if selectedView === 'nj-totals'}
     <div class="p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
-        <NjTotalsMap />
+        <NjTotalsMap
+          on:viewLocation={onViewLocation}
+        />
       </div>
     </div>
   {/if}

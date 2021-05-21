@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@njam-data/tools": "^1.0.1",
+    "@turf/bbox": "^6.3.0",
     "@turf/boolean-point-in-polygon": "^6.3.0"
   }
 }

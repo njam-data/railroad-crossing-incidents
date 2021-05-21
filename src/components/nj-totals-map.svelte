@@ -1,9 +1,12 @@
 <script>
-  import { onMount, setContext } from 'svelte'
+  import { onMount, setContext, createEventDispatcher } from 'svelte'
+  import createBbox from '@turf/bbox'
   import { mapKey, mapboxKey } from '$lib/keys.js'
   import { njMapState } from '$lib/stores.js'
 
   import Legend from '$components/legend-scale.svelte'
+
+  const dispatch = createEventDispatcher()
 
   let container
   let map
@@ -112,7 +115,7 @@
             'case',
             ['boolean', ['feature-state', 'hover'], false],
             1,
-            0.8
+            0.7
           ]
         }
       })
@@ -125,13 +128,67 @@
         'layout': {},
         'paint': {
           'line-color': '#444',
-          'line-width': 2
+          'line-width': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            3,
+            1
+          ]
         }
       })
     })
 
-    map.on('mousemove', 'county_totals', function (e) {
-      map.getCanvas().style.cursor = 'pointer'
+    let hoverFeatureId = null
+
+    function setHoverState ({ featureId, state }) {
+      map.setFeatureState({
+        id: featureId,
+        source: 'county_totals',
+        sourceLayer: 'county_totals',
+      }, {
+        hover: state
+      })
+    }
+
+    map.on('mousemove', function (e) {
+      let features = map.queryRenderedFeatures(e.point, {
+        layers: ['county_totals']
+      })
+
+      const feature = features[0]
+
+      if (!feature) {
+        map.getCanvas().style.cursor = ''
+        if (hoverFeatureId) {
+          setHoverState({
+            featureId: hoverFeatureId,
+            state: false
+          })
+          hoverFeatureId = null
+        }
+        return 
+      }
+
+
+      map.getCanvas().style.cursor = 'pointer';
+
+      if (feature && feature.id === hoverFeatureId) {
+        return
+      }
+
+      if (hoverFeatureId) {
+        setHoverState({
+          featureId: hoverFeatureId,
+          state: false
+        })
+      }
+
+      hoverFeatureId = feature.id
+
+      setHoverState({
+        featureId: feature.id,
+        state: true
+      })
     })
 
     map.on('mouseleave', 'county_totals', function () {
@@ -149,13 +206,15 @@
       map = null
     }
   })
-</script>
 
-<style>
-  .mapboxgl-ctrl-top-left {
-    @apply top-12;
+  function onViewClick () {
+    const bbox = createBbox(selectedFeature)
+    console.log('onViewClick bbox', bbox)
+    dispatch('viewLocation', {
+      bbox
+    })
   }
-</style>
+</script>
 
 <div bind:this={container} class="flex-grow z-0 h-full">
   {#if map}
@@ -256,25 +315,32 @@
   <div class="z-10 bg-white shadow overflow-hidden rounded-md absolute top-2 right-0 mr-2 w-1/2 lg:w-1/3 pb-2">
     <div class="p-4 sm:px-6">
       {#if selectedFeature}
-      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
-        {selectedFeature.properties.name}
-      </h3>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.accidents} <span class="font-normal">Accidents</span>
-      </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.killed} <span class="font-normal">Killed</span>
-      </p>
-      <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
-        {selectedFeature.properties.injured} <span class="font-normal">Injured</span>
-      </p>
+        <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+          {selectedFeature.properties.name}
+        </h3>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties.accidents} <span class="font-normal">Accidents</span>
+        </p>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties.killed} <span class="font-normal">Killed</span>
+        </p>
+        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+          {selectedFeature.properties.injured} <span class="font-normal">Injured</span>
+        </p>
+
+        <button
+          on:click={onViewClick}
+          class="mt-2 mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          View crossings in {selectedFeature.properties.name}
+        </button>
       {:else}
-      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
-        Railroad crossing accidents in New Jersey counties
-      </h3>
-      <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
-        Click counties to see the total railroad crossing crashes, deaths and injuries. For more information on specific crossings, see the database and interactive map.
-      </p>
+        <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+          Railroad crossing accidents in New Jersey counties
+        </h3>
+        <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
+          Click counties to see the total railroad crossing crashes, deaths and injuries. For more information on specific crossings, see the database and interactive map.
+        </p>
       {/if}
     </div>
   </div>

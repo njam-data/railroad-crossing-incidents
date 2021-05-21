@@ -9,6 +9,7 @@
   import Legend from '$components/legend-points.svelte'
 
   export let center
+  export let bbox
 
   let container
   let map
@@ -112,12 +113,12 @@
         'source-layer': 'railroad_crossing_incidents',
         'layout': {},
         'paint': {
-          'circle-radius': [
-            'case',
-            ['has', 'sqrt_point_count'],
-            ['+', ['*', ['get', 'sqrt_point_count'], 1.1], 10],
-            10
-          ],
+          'circle-radius': 10,// [
+            // 'case',
+            // ['has', 'sqrt_point_count'],
+            // ['+', ['*', ['get', 'sqrt_point_count'], 1.1], 10],
+            // 10
+          // ],
           'circle-color': [
             'case',
             ['==', ['get', 'Number of accidents'], 0],
@@ -137,6 +138,19 @@
             3,
             0
           ]
+        }
+      })
+
+      map.addLayer({
+        id: 'railroad_crossing_incidents_count',
+        type: 'symbol',
+        source: 'railroad_crossing_incidents',
+        'source-layer': 'railroad_crossing_incidents',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count}',
+          // 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 10
         }
       })
     })
@@ -159,6 +173,12 @@
       }, 1100)
     }
 
+    if (bbox) {
+      setTimeout(() => {
+        map.fitBounds(bbox)
+      }, 1100);
+    }
+
     let hoverFeatureId = null
 
     function setHoverState ({ featureId, state }) {
@@ -171,21 +191,15 @@
       })
     }
 
-    let popup = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false
-    })
-
     map.on('mousemove', (e) => {
       let features = map.queryRenderedFeatures(e.point, {
         layers: ['railroad_crossing_incidents']
       })
 
       const feature = features[0]
-
+console.log(feature)
       if (!feature) {
         map.getCanvas().style.cursor = ''
-        popup.remove()
         if (hoverFeatureId) {
           setHoverState({
             featureId: hoverFeatureId,
@@ -220,15 +234,12 @@
       const geometry = feature.geometry
       const coordinates = geometry.coordinates.slice();
 
-      hoverFeatureId = feature.id
-
       while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
         coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
       }
 
       if (properties.point_count && properties.point_count >- 2) {
         const description = `${properties.point_count} locations`
-        popup.setLngLat(coordinates).setHTML(description).addTo(map)
       }
     })
 
@@ -236,7 +247,7 @@
       const feature = e.features[0]
       const { point_count } = feature.properties
       map.resize()
-console.log('feature', feature)
+
       if (point_count) {
         const zoom = map.getZoom() + 2
 
