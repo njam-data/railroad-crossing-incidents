@@ -197,7 +197,7 @@
       })
 
       const feature = features[0]
-console.log(feature)
+
       if (!feature) {
         map.getCanvas().style.cursor = ''
         if (hoverFeatureId) {
@@ -277,8 +277,6 @@ console.log(feature)
     <Legend {points} />
   </div>
 
-
-
   <div class="bg-white h-1/2 sm:w-1/2 sm:h-full md:w-96 border-gray-200 border-t sm:border-t-0 sm:border-l">
     <div class="h-full overflow-y-scroll">
     {#if selectedFeature}
@@ -327,7 +325,7 @@ console.log(feature)
       </div>
       {:else}
         <div class="px-4 py-4 sm:px-6 flex items-center h-full">
-          <div class="h-40 self-center">
+          <div class="self-center">
             <h1 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
               Railroad crossing incidents
             </h1>

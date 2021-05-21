@@ -277,7 +277,7 @@
     </nav>
   </div>
 
-  <div class="flex-grow border-t border-gray-200 overflow-hidden">
+  <div class="flex-grow border-t border-gray-200 overflow-hidden h-screen">
   {#if selectedView === 'map'}
     <div class="p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
