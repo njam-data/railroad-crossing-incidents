@@ -9,7 +9,7 @@
   let map
   let mapbox
   let selectedProperty = 'accidents'
-  let selectedFeature = null
+  let selectedFeature
 
   const legendTitles = {
     accidents: 'Number of accidents',
@@ -57,6 +57,29 @@
       minZoom: 7,
       maxZoom: 14
     })
+
+    class SpacingControl {
+      onAdd(map){
+        this.map = map
+        this.container = document.createElement('div')
+        this.container.style.display = 'block'
+        this.container.style.height = '2.75rem'
+        this.container.style.width = '2.75rem'
+        return this.container
+      }
+
+      onRemove(){
+        this.container.parentNode.removeChild(this.container)
+        this.map = undefined
+      }
+    }
+
+    map.addControl(
+      new SpacingControl(),
+      'top-left'
+    )
+
+    map.addControl(new mapbox.NavigationControl(), 'top-left')
 
     map.on('load', () => {
       map.resize()
@@ -127,6 +150,12 @@
     }
   })
 </script>
+
+<style>
+  .mapboxgl-ctrl-top-left {
+    @apply top-12;
+  }
+</style>
 
 <div bind:this={container} class="flex-grow z-0 h-full">
   {#if map}
@@ -224,9 +253,9 @@
 
   <Legend scale={scale} title={legendTitle} />
 
-  {#if selectedFeature}
-  <div class="bg-white shadow overflow-hidden rounded-md absolute top-4 right-0 mr-4 w-1/2 lg:w-1/3 pb-2">
-    <div class="px-4 py-4 sm:px-6">
+  <div class="z-10 bg-white shadow overflow-hidden rounded-md absolute top-2 right-0 mr-2 w-1/2 lg:w-1/3 pb-2">
+    <div class="p-4 sm:px-6">
+      {#if selectedFeature}
       <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
         {selectedFeature.properties.name}
       </h3>
@@ -239,7 +268,15 @@
       <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
         {selectedFeature.properties.injured} <span class="font-normal">Injured</span>
       </p>
+      {:else}
+      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+        Railroad crossing accidents in New Jersey counties
+      </h3>
+      <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
+        Click counties to see the total accidents and the number of accidents with injuries and fatalities.
+      </p>
+      {/if}
     </div>
   </div>
-  {/if}
+
 </div>

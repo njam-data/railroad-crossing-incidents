@@ -92,8 +92,10 @@
         accessToken: mapbox.accessToken,
         mapboxgl: mapbox
       }),
-      'top-right'
+      'top-left'
     )
+
+    map.addControl(new mapbox.NavigationControl(), 'top-left')
 
     map.on('load', () => {
       map.resize()
@@ -295,7 +297,7 @@
           {selectedFeature.properties['Total injured']} Injured
         </p>
       </div>
-  
+
       <div class="border-t border-gray-200 px-4 py-2 sm:py-4 sm:p-0">
         <dl class="divide-y divide-gray-200">
           {#if properties}
@@ -313,10 +315,15 @@
         </dl>
       </div>
       {:else}
-        <div class="px-4 py-4 sm:px-6 flex items center h-full">
-          <h1 class="block self-center w-[220px] font-medium text-gray-500 text-xl mx-auto align-middle">
-            Click a point to learn <br>about accidents and other information at that railroad crossing.
-          </h1>
+        <div class="px-4 py-4 sm:px-6 flex items-center h-full">
+          <div class="h-40 self-center">
+            <h1 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+              Railroad crossing incidents
+            </h1>
+            <p class="font-medium text-gray-500 text-xl">
+              Click a point to learn <br>about accidents and other information at that railroad crossing.
+            </p>
+          </div>
         </div>
       {/if}
       </div>

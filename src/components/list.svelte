@@ -1,6 +1,7 @@
 <script>
   import { onMount, createEventDispatcher } from 'svelte'
 
+  import { listHelpOpen } from '$lib/stores.js'
   import { statesToCodes } from '$lib/state-codes.js'
   import { clickOutside } from '$lib/click-outside.js'
   import CheckIcon from '$components/icons/check.svelte'
@@ -21,8 +22,6 @@
   let menu = {
     open: null
   }
-
-  $: console.log('sort', sort)
 
   const columns = rows[0].map((row) => {
     return row.key
@@ -144,7 +143,52 @@
     console.log('huh')
     dispatch('viewLocation', value)
   }
+
+  function onCloseHelp () {
+    listHelpOpen.update(() => {
+      return false
+    })
+  }
 </script>
+
+{#if $listHelpOpen}
+<div class="flex justify-center">
+  <div class="z-10 bg-white shadow overflow-hidden absolute rounded-md mr-2 w-1/2 lg:w-1/3 pb-2">
+    <button
+      on:click={onCloseHelp}
+      class="
+        float-right
+        h-4
+        px-2
+        pb-5
+        rounded-sm
+        mt-2
+        mr-2
+        hover:bg-gray-100
+        text-gray-600
+        hover:text-gray-900
+      "
+    >
+      x
+    </button>
+    <div class="p-4 sm:px-6">
+      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+        Locations table
+      </h3>
+      <p class="font-medium my-0 py0 max-w-2xl text-gray-600">
+        Search for railroad crossings near you using the search bar on the left. Sort by a column by selecting the drop down menu next to its name.
+      </p>
+
+      <button
+        on:click={onCloseHelp}
+        class="mt-2 float-right inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        Get started
+      </button>
+    </div>
+  </div>
+</div>
+{/if}
 
 <div class="flex flex-col h-full overflow-scroll bg-gray-50">
   <div class="w-full h-96 p-2">
@@ -214,7 +258,7 @@
             {#each rows as row}
               <tr>
                 {#each row as cell}
-                  <td class="px-12 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td class="px-4 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">
                     {#if cell.key === 'Map view'}
                       <button on:click={() => {
                         onRowClick(cell.value)

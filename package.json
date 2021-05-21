@@ -36,6 +36,7 @@
     "us-counties": "^1.2.1"
   },
   "dependencies": {
+    "@njam-data/tools": "^1.0.1",
     "@turf/boolean-point-in-polygon": "^6.3.0"
   }
 }

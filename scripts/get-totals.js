@@ -73,12 +73,10 @@ for (const incident of json) {
 
 const statesGeojson = featureCollection(objectToArray(stateTotals).map((state, i) => {
   const feature = states.features.find((feature) => {
-    console.log('feature', feature)
     return state.name === feature.properties.STUSPS
   })
 
   if (!feature) {
-    console.log('state missing?', state)
     return
   }
 
@@ -97,8 +95,8 @@ const countiesGeojson = featureCollection(objectToArray(njCountyTotals).map((cou
   })
 
   feature.properties = {
-    name: feature.properties.county_label,
-    ...county
+    ...county,
+    name: feature.properties.county_label
   }
 
   feature.id = `${feature.properties.name}-${i}`
@@ -112,8 +110,8 @@ const municipalitiesGeojson = featureCollection(municipalities.features.map((fea
 
   if (municipalityKey) {
     feature.properties = {
-      name: feature.properties.name,
-      ...njMunicipalityTotals[municipalityKey]
+      ...njMunicipalityTotals[municipalityKey],
+      name: feature.properties.mun_label
     }
   } else {
     feature.properties = {

@@ -9,3 +9,5 @@ export const usMapState = writable({
   zoom: 2,
   lngLat: ['-98.5556', '39.8097']
 })
+
+export const listHelpOpen = writable(true)

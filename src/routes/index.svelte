@@ -5,11 +5,9 @@
     const url = 'https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?&_sort=StateName'
     const res = await fetch(url)
     const json = await res.json()
-console.log('json', json)
+
     if (res.ok) {
       const { rows, columns } = getRows(json)
-console.log('json next', json.next)
-
       const rowsCount = json.filtered_table_rows_count
 
       let next = null
@@ -60,7 +58,7 @@ console.log('json next', json.next)
   let loaded = true
   let currentPage = 1
 
-  let selectedView = $page.query.get('view') || 'nj-totals'
+  let selectedView = $page.query.get('view') || 'map'
 
   async function requestRows (queryObject) {
     loaded = false
@@ -100,16 +98,13 @@ console.log('json next', json.next)
 
     const querystring = queryFragments.join('&')
     const url = `https://railroad-crossing-data.vercel.app/railroad_crossing_data/RRData.json?${querystring}`
-    console.log('url', url)
     const res = await fetch(url)
     const json = await res.json()
-    console.log('json', json)
     const obj = getRows(json)
     rows = [...obj.rows]
     columns = [...obj.columns]
     rowsCount = json.filtered_table_rows_count
     const firstRowId = json.rows[0][0]
-    console.log('firstRowId', firstRowId)
 
     if (json.next) {
       if (json.next.includes(',')) {
