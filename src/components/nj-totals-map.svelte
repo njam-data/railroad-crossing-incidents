@@ -13,6 +13,7 @@
   let mapbox
   let selectedProperty = 'accidents'
   let selectedFeature
+  let open = true
 
   const legendTitles = {
     accidents: 'Number of accidents',
@@ -31,13 +32,13 @@
   })
 
   const scale = [
-    [ 0, '#fcde9c'],
-    [ 15, '#faa476'],
-    [ 30, '#f0746e'],
-    [ 45, '#e34f6f'],
-    [ 60, '#dc3977'],
-    [ 75, '#b9257a'],
-    [ 90, '#7c1d6f']
+    [0, '#fcde9c'],
+    [15, '#faa476'],
+    [30, '#f0746e'],
+    [45, '#e34f6f'],
+    [60, '#dc3977'],
+    [75, '#b9257a'],
+    [90, '#7c1d6f']
   ]
 
   function selectProperty (prop) {
@@ -60,27 +61,6 @@
       minZoom: 7,
       maxZoom: 14
     })
-
-    class SpacingControl {
-      onAdd(map){
-        this.map = map
-        this.container = document.createElement('div')
-        this.container.style.display = 'block'
-        this.container.style.height = '2.75rem'
-        this.container.style.width = '2.75rem'
-        return this.container
-      }
-
-      onRemove(){
-        this.container.parentNode.removeChild(this.container)
-        this.map = undefined
-      }
-    }
-
-    map.addControl(
-      new SpacingControl(),
-      'top-left'
-    )
 
     map.addControl(new mapbox.NavigationControl(), 'top-left')
 
@@ -200,6 +180,7 @@
       selectedFeature = features.find((feature) => {
         return feature.layer.id === 'county_totals'
       })
+      open = true
     })
 
     return () => {
@@ -209,10 +190,13 @@
 
   function onViewClick () {
     const bbox = createBbox(selectedFeature)
-    console.log('onViewClick bbox', bbox)
     dispatch('viewLocation', {
       bbox
     })
+  }
+
+  function onClose () {
+    open = false
   }
 </script>
 
@@ -221,7 +205,7 @@
     <slot></slot>
   {/if}
 
-  <div class="absolute z-10 flex flex-col sm:flex-row shadow-sm rounded-md top-2 left-2">
+  <div class="absolute z-10 flex flex-col shadow-sm rounded-md top-28 left-2">
     <button
       type="button"
       on:click={() => { selectProperty('accidents') }}
@@ -230,15 +214,14 @@
         relative
         inline-flex
         items-center
-        px-4
-        py-2
+        p-2
+        sm:px-4
         rounded-t-md
-        sm:rounded-l-md
-        sm:rounded-tr-none
         border
         border-gray-300
         bg-white
-        text-sm
+        text-xs
+        sm:text-sm
         font-medium
         text-gray-700
         hover:bg-gray-50
@@ -260,12 +243,13 @@
         relative
         inline-flex
         items-center
-        px-4
-        py-2
+        p-2
+        sm:px-4
         border
         border-gray-300
         bg-white
-        text-sm
+        text-xs
+        sm:text-sm
         font-medium
         text-gray-700
         hover:bg-gray-50
@@ -287,15 +271,14 @@
         relative
         inline-flex
         items-center
-        px-4
-        py-2
+        p-2
+        sm:px-4
         rounded-b-md
-        sm:rounded-r-md
-        sm:rounded-bl-none
         border
         border-gray-300
         bg-white
-        text-sm
+        text-xs
+        sm:text-sm
         font-medium
         text-gray-700
         hover:bg-gray-50
@@ -312,37 +295,56 @@
 
   <Legend scale={scale} title={legendTitle} />
 
+  {#if open}
   <div class="z-10 bg-white shadow overflow-hidden rounded-md absolute top-2 right-0 mr-2 w-1/2 lg:w-1/3 pb-2">
+    <button
+      on:click={onClose}
+      class="
+        float-right
+        h-4
+        px-2
+        pb-5
+        rounded-sm
+        mt-2
+        mr-2
+        hover:bg-gray-100
+        text-gray-600
+        hover:text-gray-900
+      "
+    >
+      x
+    </button>
+
     <div class="p-4 sm:px-6">
       {#if selectedFeature}
-        <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+        <h3 class="sm:text-lg sm:text-xl md:text-2xl sm:leading-6 font-bold text-gray-900 sm:pb-2 mb-1 sm:mb-2 border-b border-gray-100">
           {selectedFeature.properties.name}
         </h3>
-        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        <p class="font-bold my-0 py0 max-w-2xl sm:text-lg text-gray-600">
           {selectedFeature.properties.accidents} <span class="font-normal">Accidents</span>
         </p>
-        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        <p class="font-bold my-0 py0 max-w-2xl sm:text-lg text-gray-600">
           {selectedFeature.properties.killed} <span class="font-normal">Killed</span>
         </p>
-        <p class="font-bold my-0 py0 max-w-2xl text-lg text-gray-600">
+        <p class="font-bold my-0 py0 max-w-2xl sm:text-lg text-gray-600">
           {selectedFeature.properties.injured} <span class="font-normal">Injured</span>
         </p>
 
         <button
           on:click={onViewClick}
-          class="mt-2 mr-2 inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="mt-2 mr-2 inline-flex items-center p-1 sm:px-2.5 sm:py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           View crossings in {selectedFeature.properties.name}
         </button>
       {:else}
-        <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+        <h3 class="sm:text-xl md:text-2xl sm:leading-6 font-bold text-gray-900 sm:pb-2 mb-1 sm:mb-2 border-b border-gray-100">
           Railroad crossing accidents in New Jersey counties
         </h3>
-        <p class="font-medium my-0 py0 max-w-2xl text-lg text-gray-600">
-          Click counties to see the total railroad crossing crashes, deaths and injuries. For more information on specific crossings, see the database and interactive map.
+        <p class="font-medium my-0 py0 max-w-2xl text-xs sm:text-base md:text-lg text-gray-600">
+          Click counties to see the total railroad crossing crashes, deaths and injuries. For information on specific crossings, see the database and interactive map.
         </p>
       {/if}
     </div>
   </div>
-
+  {/if}
 </div>

@@ -277,7 +277,7 @@
     <Legend {points} />
   </div>
 
-  <div class="bg-white h-1/2 sm:w-1/2 sm:h-full md:w-96 border-gray-200 border-t sm:border-t-0 sm:border-l">
+  <div class="bg-white h-1/3 sm:w-1/2 sm:h-full md:w-96 border-gray-200 border-t sm:border-t-0 sm:border-l">
     <div class="h-full overflow-y-scroll">
     {#if selectedFeature}
       <div class="px-4 py-4 sm:px-6">
@@ -324,15 +324,15 @@
         </dl>
       </div>
       {:else}
-        <div class="px-4 py-4 sm:px-6 flex items-center h-full">
+        <div class="p-2 sm:px-6 flex items-center h-full">
           <div class="self-center">
-            <h1 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+            <h1 class="text-lg sm:text-xl md:text-2xl leading-6 font-bold text-gray-900 pb-1 mb-1 sm:pb-2 sm:mb-2 border-b border-gray-100">
               Railroad crossing incidents
             </h1>
-            <p class="font-medium text-gray-700 text-xl">
+            <p class="font-medium text-gray-700 text-sm sm:text-xl">
               Click a crossing to see its safety data and whether it meets safety guidelines.
             </p>
-            <p class="text-gray-500 mt-4">
+            <p class="text-gray-500 mt-1 text-xs sm:text-base sm:mt-4">
               This data was retrieved from the Federal Railroad Administration in early April 2021 and the agency acknowledges that it might not offer a complete or accurate picture of U.S. rail crossings.
             </p>
           </div>

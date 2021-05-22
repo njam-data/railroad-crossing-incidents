@@ -91,7 +91,6 @@
   }
 
   function onOutsideMenuClick (column, e) {
-    console.log('e', e.detail)
     if (menu.open === column) {
       setTimeout(() => {
         menu.open = null
@@ -140,7 +139,6 @@
   }
 
   function onRowClick (value) {
-    console.log('huh')
     dispatch('viewLocation', value)
   }
 
@@ -153,7 +151,7 @@
 
 {#if $listHelpOpen}
 <div class="flex justify-center">
-  <div class="z-10 bg-white shadow overflow-hidden absolute rounded-md mr-2 w-1/2 lg:w-1/3 pb-2">
+  <div class="z-10 bg-white shadow overflow-hidden absolute rounded-md mr-2 w-2/3 lg:w-1/3 pb-2">
     <button
       on:click={onCloseHelp}
       class="
@@ -172,10 +170,10 @@
       x
     </button>
     <div class="p-4 sm:px-6">
-      <h3 class="text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
+      <h3 class="sm:text-2xl leading-6 font-bold text-gray-900 pb-2 mb-2 border-b border-gray-100">
         Locations table
       </h3>
-      <p class="font-medium my-0 py0 max-w-2xl text-gray-600">
+      <p class="text-sm sm:text-base font-medium my-0 py0 max-w-2xl text-gray-600">
         Search for railroad crossings near you using the search bar on the left. Sort by a column by selecting the drop down menu next to its name.
       </p>
 

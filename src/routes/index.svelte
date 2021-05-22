@@ -21,7 +21,6 @@
         next = json.next
       }
 
-      console.log('next', next)
       return {
         props: {
           rows,
@@ -157,13 +156,11 @@
   }
 
   async function onNextPage (e) {
-    console.log('next')
     currentPage = currentPage + 1
     await requestRows(e.detail)
   }
 
   async function onPreviousPage (e) {
-    console.log('previous')
     next = next - 200
     if (next < 0) {
       next = null
@@ -196,8 +193,8 @@
   <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
 </svelte:head>
 
-<div class="flex flex-col h-screen border border-gray-100  max-w-screen-lg mx-auto">
-  <div class="flex-none p-2 sm:p-4">
+<div class="flex flex-col absolute inset-0 border border-gray-100 max-w-screen-lg mx-auto">
+  <div class="flex-none p-1 sm:p-4">
     <h1 class="font-bold text-gray-600">Railroad Crossing Incidents</h1>
   </div>
 
@@ -207,7 +204,7 @@
       on:click={() => { selectView('map') }}
       class="
         { selectedView === 'map' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+        group relative min-w-0 flex-1 overflow-hidden bg-white py-3 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
       "
       aria-current="page"
     >
@@ -225,7 +222,7 @@
       on:click={() => { selectView('list') }}
       class="
         { selectedView === 'list' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-        group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+        group relative min-w-0 flex-1 overflow-hidden bg-white py-3 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
       "
       aria-current="page"
     >
@@ -243,7 +240,7 @@
         on:click={() => { selectView('nj-totals') }}
         class="
           { selectedView === 'nj-totals' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+          group relative min-w-0 flex-1 overflow-hidden bg-white py-3 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
         "
         aria-current="page"
       >
@@ -261,7 +258,7 @@
         on:click={() => { selectView('us-totals') }}
         class="
           { selectedView === 'us-totals' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700' }
-          group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
+          group relative min-w-0 flex-1 overflow-hidden bg-white py-3 px-2 sm:p-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10
         "
         aria-current="page"
       >
@@ -279,13 +276,13 @@
 
   <div class="flex-grow border-t border-gray-200 overflow-hidden h-screen">
   {#if selectedView === 'map'}
-    <div class="p-4 h-full bg-gray-50">
+    <div class="p-1 sm:p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <Map center={center} bbox={bbox} />
       </div>
     </div>
   {:else if selectedView === 'list'}
-    <div class="p-4 pb-12 h-full bg-gray-50">
+    <div class="p-1 sm:p-4 pb-12 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <List
           {rows}
@@ -302,7 +299,7 @@
       </div>
     </div>
   {:else if selectedView === 'us-totals'}
-    <div class="p-4 h-full bg-gray-50">
+    <div class="p-1 sm:p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <UsTotalsMap
           on:viewLocation={onViewLocation}
@@ -310,7 +307,7 @@
       </div>
     </div>
     {:else if selectedView === 'nj-totals'}
-    <div class="p-4 h-full bg-gray-50">
+    <div class="p-1 sm:p-4 h-full bg-gray-50">
       <div class="bg-white border h-full border-gray-200 rounded-md shadow">
         <NjTotalsMap
           on:viewLocation={onViewLocation}
@@ -320,7 +317,7 @@
   {/if}
   </div>
 
-  <div class="flex-none p-4 text-xs text-gray-500 border-t border-gray-200">
+  <div class="flex-none p-2 sm:p-4 text-xs text-gray-500 border-t border-gray-200">
     Story by <a href="https://twitter.com/PaytonGuion" target="_blank" class="underline">Payton Guion</a>. Graphics by <a href="https://twitter.com/sethdvincent" target="_blank" class="underline">Seth Vincent</a>. <br class="sm:hidden">Data from the <a href="https://railroads.dot.gov" target="_blank" class="underline">Federal Railroad Administration</a>.
   </div>
 </div>
